@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    <title>会員登録</title>
+    <title>ログイン</title>
 @endsection
 
 @section('css')
@@ -9,15 +9,10 @@
 @endsection
 
 @section('main')
-    <h1 class="page-title">会員登録</h1>
+    <h1 class="page-title">ログイン</h1>
     <form action="" method="post" novalidate>
     @csrf
         <div class="form-box">
-            <div class="input-box">
-                <label class="input-title">名前
-                    <input class="input" type="text" name="name">
-                </label>
-            </div>
             <div class="input-box">
                 <label class="input-title">メールアドレス
                     <input class="input" type="email" name="email">
@@ -28,15 +23,10 @@
                     <input class="input" type="password" name="password">
                 </label>
             </div>
-            <div class="input-box">
-                <label class="input-title">パスワード確認
-                    <input class="input" type="password" name="password">
-                </label>
-            </div>
-            <button class="button__submit" type="sumbit">登録する</button>
+            <button class="button__submit" type="sumbit">ログインする</button>
         </div>
     </form>
     <div class="link__inner">
-        <a href="/login" class="link">ログインはこちら</a>
+        <a href="/register" class="link">会員登録はこちら</a>
     </div>
 @endsection

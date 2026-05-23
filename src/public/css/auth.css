@@ -8,7 +8,7 @@
 }
 .input-box{
     width: 100%;
-    margin-top: 40px;
+    margin-top: 30px;
 }
 .input-title{
     font-size: 24px;
@@ -27,10 +27,11 @@
 }
 .button__submit{
     width: 100%;
-    margin-top: 80px;
+    margin-top:70px;
     color: #ffffff;
     background-color: #000000;
     border: none;
+    border-radius: 5px;
     padding: 10px;
     font-size: 26px;
     font-weight: 700;
@@ -39,18 +40,18 @@
 .button__submit:hover{
     color: #cccccc;
 }
-.login-link__inner{
+.link__inner{
     width: 100%;
     text-align: center;
     margin-top: 20px;
 }
-.login-link{
+.link{
     text-decoration: none;
     font-size: 20px;
     font-weight: 200;
     text-align: center;
     padding: 10px 40px;
 }
-.login-link:hover{
+.link:hover{
     text-decoration: underline;
 }
