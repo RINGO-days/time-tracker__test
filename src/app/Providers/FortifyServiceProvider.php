@@ -59,9 +59,9 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(Loginresponse::class, new class implements LoginResponse{
             public function toResponse($request)
             {
-                // if(! $request->user()->hasVerifiedEmail()){
-                //     return redirect('/email/verify');
-                // }
+                if(! $request->user()->hasVerifiedEmail()){
+                    return redirect('/email/verify');
+                }
                 return redirect('/attendance');
             }
         });
