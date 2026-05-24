@@ -15,22 +15,37 @@
         <div class="form-box">
             <div class="input-box">
                 <label class="input-title">名前
-                    <input class="input" type="text" name="name">
+                    <input class="input" type="text" name="name" value="{{old('name')}}">
+                    @error('name')
+                        <div class="error-box">
+                            <span class="error-message">{{$message}}</span>
+                        </div>
+                    @enderror
                 </label>
             </div>
             <div class="input-box">
                 <label class="input-title">メールアドレス
-                    <input class="input" type="email" name="email">
+                    <input class="input" type="email" name="email" value="{{old('email')}}">
+                    @error('email')
+                        <div class="error-box">
+                            <span class="error-message">{{$message}}</span>
+                        </div>
+                    @enderror
                 </label>
             </div>
             <div class="input-box">
                 <label class="input-title">パスワード
                     <input class="input" type="password" name="password">
+                    @error('password')
+                        <div class="error-box">
+                            <span class="error-message">{{$message}}</span>
+                        </div>
+                    @enderror
                 </label>
             </div>
             <div class="input-box">
                 <label class="input-title">パスワード確認
-                    <input class="input" type="password" name="password">
+                    <input class="input" type="password" name="password_confirmation">
                 </label>
             </div>
             <button class="button__submit" type="sumbit">登録する</button>

@@ -21,7 +21,8 @@
                     <li><a href="">勤怠一覧</a></li>
                     <li><a href="">申請</a></li>
                     <li>
-                        <form action="">
+                        <form action="{{route('logout')}}" method="POST">
+                            @csrf
                             <button class="logout-button">ログアウト</button>
                         </form>
                     </li>

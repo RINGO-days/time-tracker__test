@@ -15,12 +15,22 @@
         <div class="form-box">
             <div class="input-box">
                 <label class="input-title">メールアドレス
-                    <input class="input" type="email" name="email">
+                    <input class="input" type="email" name="email" value="{{old('email')}}">
+                    @error('email')
+                        <div class="error-box">
+                            <span class="error-message">{{$message}}</span>
+                        </div>
+                    @enderror
                 </label>
             </div>
             <div class="input-box">
                 <label class="input-title">パスワード
                     <input class="input" type="password" name="password">
+                    @error('password')
+                        <div class="error-box">
+                            <span class="error-message">{{$message}}</span>
+                        </div>
+                    @enderror
                 </label>
             </div>
             <button class="button__submit" type="sumbit">ログインする</button>
