@@ -10,7 +10,7 @@
 
 @section('main')
     <h1 class="page-title">ログイン</h1>
-    <form action="" method="post" novalidate>
+    <form action="{{route('login')}}" method="post" novalidate>
     @csrf
         <div class="form-box">
             <div class="input-box">
