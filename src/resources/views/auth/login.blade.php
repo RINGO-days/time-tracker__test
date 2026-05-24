@@ -14,7 +14,13 @@
             <span class="flash-message">{{ session('message') }}</span>
         @endif
     </div>
-    <h1 class="page-title">ログイン</h1>
+    <h1 class="page-title">
+        @if(request()->query('page') ==='admin')
+            管理者ログイン
+        @else
+            ログイン
+        @endif
+    </h1>
     <form action="{{route('login')}}" method="post" novalidate>
     @csrf
         <div class="form-box">
@@ -38,10 +44,18 @@
                     @enderror
                 </label>
             </div>
-            <button class="button__submit" type="sumbit">ログインする</button>
+            <button class="button__submit" type="sumbit">
+                @if(request()->query('page') ==='admin')
+                    管理者ログインする
+                @else
+                    ログインする
+                @endif
+            </button>
         </div>
     </form>
-    <div class="link__inner">
-        <a href="/register" class="link">会員登録はこちら</a>
-    </div>
+    @if(request()->query('page') !== 'admin')
+        <div class="link__inner">
+            <a href="/register" class="link">会員登録はこちら</a>
+        </div>
+    @endif
 @endsection
