@@ -21,7 +21,7 @@
             ログイン
         @endif
     </h1>
-    <form action="{{route('login')}}" method="post" novalidate>
+    <form action="{{ route('login', ['page' => request('page')]) }}" method="POST" novalidate>
     @csrf
         <div class="form-box">
             <div class="input-box">

@@ -14,7 +14,21 @@
         <div class="header__logo">
             <img src="{{asset('img/COACHTECHヘッダーロゴ.png')}}" alt="ヘッダーロゴ">
         </div>
-        @if($nav ?? true)
+        @if(($nav ?? '') === 'admin')
+            <nav>
+                <ul class="header__nav-item">
+                    <li><a href="">勤怠一覧</a></li>
+                    <li><a href="">スタッフ一覧</a></li>
+                    <li><a href="">申請一覧</a></li>
+                    <li>
+                        <form action="{{route('logout',['page' => 'admin'])}}" method="POST">
+                            @csrf
+                            <button class="logout-button">ログアウト</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        @elseif($nav ?? true)
             <nav>
                 <ul class="header__nav-item">
                     <li><a href="">勤怠</a></li>
