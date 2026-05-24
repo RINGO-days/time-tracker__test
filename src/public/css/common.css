@@ -78,6 +78,7 @@ body {
     border: #00FA9A 1px solid;
     animation: feadout 5s ease forwards;
     display: block;
+    padding-left: 20px;
 }
 
 @keyframes feadout {

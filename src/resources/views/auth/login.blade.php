@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <h1 class="page-title">ログイン</h1>
     <form action="{{route('login')}}" method="post" novalidate>
     @csrf
