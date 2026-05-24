@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LogoutResponse;
+use Laravel\Fortify\Contracts\LoginResponse;
+
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -32,6 +35,38 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        Fortify::registerView(function () {
+            return view('auth.register',['nav' => false]);
+        });
+
+        Fortify::loginView(function () {
+            return view('auth.login',['nav' => false]);
+        });
+
+        Fortify::verifyEmailView(function () {
+            return view('auth.verify-email',);
+        });
+
+        $this->app->instance(Loginresponse::class, new class implements LoginResponse{
+            public function toResponse($request)
+            {
+                // if(! $request->user()->hasVerifiedEmail()){
+                //     return redirect('/email/verify');
+                // }
+                return redirect('/attendance');
+            }
+        });
+
+        $this->app->instance(Logoutresponse::class, new class implements LogoutResponse{
+            public function toResponse($request)
+            {
+                // if(! $request->user()->hasVerifiedEmail()){
+                //     return redirect('/email/verify');
+                // }
+                return redirect('/login');
+            }
+        });
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
