@@ -67,3 +67,36 @@ body {
     font-weight: 500;
     display: block;
 }
+.flash-message__box{
+    height: 50px;
+}
+.flash-message {
+    color: #ffffff;
+    background-color: #28a745;
+    font-weight: 400;
+    font-size: 16px;
+    border: #00FA9A 1px solid;
+    animation: feadout 5s ease forwards;
+    display: block;
+}
+
+@keyframes feadout {
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

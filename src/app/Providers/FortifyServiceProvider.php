@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LogoutResponse;
 use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\RegisterResponse;
 
 
 class FortifyServiceProvider extends ServiceProvider
@@ -45,15 +46,22 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::verifyEmailView(function () {
-            return view('auth.verify-email',);
+            return view('auth.verify-email',['nav' => false]);
+        });
+
+        $this->app->instance(Registerresponse::class, new class implements RegisterResponse{
+            public function toResponse($request)
+            {
+                return redirect('/email/verify',);
+            }
         });
 
         $this->app->instance(Loginresponse::class, new class implements LoginResponse{
             public function toResponse($request)
             {
-                // if(! $request->user()->hasVerifiedEmail()){
-                //     return redirect('/email/verify');
-                // }
+                if(! $request->user()->hasVerifiedEmail()){
+                    return redirect('/email/verify');
+                }
                 return redirect('/attendance');
             }
         });
@@ -61,9 +69,6 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(Logoutresponse::class, new class implements LogoutResponse{
             public function toResponse($request)
             {
-                // if(! $request->user()->hasVerifiedEmail()){
-                //     return redirect('/email/verify');
-                // }
                 return redirect('/login');
             }
         });
