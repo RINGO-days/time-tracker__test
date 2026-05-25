@@ -34,6 +34,7 @@
     border-radius: 5px;
     padding: 5px 0;
     width: 220px;
+    cursor: pointer;
 }
 .rest-button{
     background-color: #ffffff;
@@ -44,4 +45,9 @@
     border-radius: 5px;
     padding: 5px 0;
     width: 220px;
+    cursor: pointer;
+}
+.work-finish{
+    font-size: 26px;
+    font-weight: 700;
 }
