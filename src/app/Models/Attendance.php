@@ -13,7 +13,11 @@ class Attendance extends Model
         'user_id',
         'status',
         'attendance_date',
-        'check_time',
+        'attendance_time',
+        'leave_time',
     ];
 
+    protected $casts = [
+        'check_time' => 'datetime',
+    ];
 }

@@ -8,6 +8,6 @@ class AdminController extends Controller
 {
     public function show()
     {
-        return view('admin.show',['nav' => 'admin']);
+        return view('common.list',['nav' => 'admin']);
     }
 }
