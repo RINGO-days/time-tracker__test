@@ -1,0 +1,108 @@
+.title{
+    width: 60%;
+    margin: 40px auto;
+    position: relative;
+    padding-left: 15px;
+    font-size: 30px;
+    font-weight: 700;
+}
+.title::before{
+    content: "";
+    background-color: #000000;
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    left: 0;
+}
+.pagenation__box{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin: 0 auto 5px auto;
+    padding: 0 50px;
+    background-color: #ffffff;
+    align-items: center;
+}
+.calender-label{
+    display: inline-block;
+    position: relative;
+    width: 100px;
+}
+.date-input{
+    color: transparent;
+    border: none;
+    width: 100%;
+    padding: 5px 10px;
+}
+.date-input:hover{
+    background-color: #AFEEEE;
+    border-radius: 30px;
+}
+.date-input.date-input::-webkit-calendar-picker-indicator{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 999;
+    cursor: pointer;
+}
+.date-text{
+    position: absolute;
+    top: 0;
+    left: 30px;
+    width: 100%;
+    height: 100%;
+    color: #737373;
+    pointer-events: none;
+}
+.page-link{
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    color: #737373;
+}
+.page-link:hover {
+    background-color: #AFEEEE;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(175, 238, 238, 0.4);
+    transform: translateY(-2px);
+}
+.table{
+    width: 60%;
+    margin: 0 auto;
+    color: #737373;
+    border-collapse: separate;
+    border-spacing: 0 3px;
+    text-align: center;
+    line-height: 2.5;
+}
+.header_row{
+    border-radius: 8px 8px 0 0;
+    background-color: #ffffff;
+}
+.header_item:first-child{
+    border-radius: 8px 0 0 0;
+    width: 25%;
+}
+.header_item:last-child{
+    border-radius: 0 8px 0 0;
+    width: 15%;
+}
+.item_row{
+    background-color: #ffffff;
+}
+.detail_button{
+    border: none;
+    background-color: transparent;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: #000000;
+    padding: 5px 10px;
+}
+.detail_button:hover{
+    color: #FF7F50;
+}

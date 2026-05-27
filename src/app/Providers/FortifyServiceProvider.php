@@ -66,7 +66,7 @@ class FortifyServiceProvider extends ServiceProvider
                 if(auth()->user()->is_admin && $request->query('page') === 'admin' ){
                     return redirect('/show');
                 }
-                return redirect('/index');
+                return redirect('/');
             }
         });
 
