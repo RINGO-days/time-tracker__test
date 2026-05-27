@@ -37,7 +37,7 @@
                 <td>{{$record['rest']}}</td>
                 <td>{{$record['workingTime']}}</td>
                 <td>
-                    <button class="detail_button" type="submit">詳細</button>
+                    <a class="detail_button" href="/detail?date={{$record['date']}}" type="submit">詳細</a>
                 </td>
             </tr>
         @endforeach

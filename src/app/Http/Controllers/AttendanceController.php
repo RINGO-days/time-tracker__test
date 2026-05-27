@@ -154,4 +154,9 @@ class AttendanceController extends Controller
 
         return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
     }
+
+    public function detal()
+    {
+        return view('staff.detail');
+    }
 }
