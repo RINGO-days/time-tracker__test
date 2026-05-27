@@ -11,7 +11,7 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $weeks = ['月','火','水','木','金','土','日'];
+        $weeks = ['日','月','火','水','木','金','土'];
         $todayWeek = $weeks[now()->dayOfWeek];
 
         $todayAttendance = Attendance::where('user_id',auth()->id())
@@ -86,36 +86,72 @@ class AttendanceController extends Controller
         return redirect('/');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $startOfMonth = Carbon::today()->startOfMonth();
-        $endOfMonth = Carbon::today()->endOfMonth();
+        $targetMonth = $request->get('month',Carbon::today()->format('Y-m'));
+        $startOfMonth = Carbon::parse($targetMonth)->startOfMonth();
+        $endOfMonth = Carbon::parse($targetMonth)->endOfMonth();
 
-        $attendances = Attendance::where('user_id',auth()->id())
-                ->wherebetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
-                ->get();
+        $preMonth = $startOfMonth->copy()->subMonthNoOverflow()->format('Y-m');
+        $nextMonth = $endOfMonth->copy()->addMonthNoOverflow()->format('Y-m');
 
-        for($date = $startOfMonth->copy();$date->lte($endOfMonth);$date->addDay()){
+        $attendance_month = Attendance::where('user_id',auth()->id())
+                            ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
+                            ->get();
+
+        for($date = $startOfMonth->copy() ; $date->lte($endOfMonth) ; $date->addDay()){
+            // 日付の文字列化、並びに曜日の出力
             $dateString = $date->toDateString();
+            $weeks = ['日','月','火','水','木','金','土'];
+            $week = $weeks[$date->dayOfWeek];
 
-            $attendance = $attendances->where('attendance_date',$dateString)->where('status',1)->first();
-            $leave = $attendances->where('attendance_date',$dateString)->where('status',3)->first();
-            if($attendance && $leave){
-                $workingTimes = $attendance->check_time->diffInMinutes($leave->check_time);
+            // 出勤と退勤時刻
+            $attendance_day = $attendance_month->where('attendance_date',$dateString)->first();
+            $attendance_time = $attendance_day ? Carbon::parse($attendance_day->attendance_time) : '';
+            $leave_time = $attendance_day ? Carbon::parse($attendance_day->leave_time) : '';
+
+            // 勤務時間の計算
+            if($attendance_time && $leave_time){
+                $work_seconds = $attendance_time->diffInSeconds($leave_time);
+                $work_minutes = round($work_seconds / 60);
+                $hour = floor($work_minutes / 60);
+                $minute = $work_minutes % 60;
+                $working_time = sprintf('%02d:%02d', $hour, $minute);
             }else{
-                $workingTimes = '';
-            }
-            $rest_start = $attendances->where('attendance_date',$dateString)->where('status',2)->first();
-            $rest_end = $attendances->where('attendance_date',$dateString)->where('status',1)->first();
+                $working_time = '';
+            };
 
-            $recodes[] = [
-                'date' => $date->format('m/d'),
-                'attendance' => $attendance ? $attendance->check_time->format('H:i') : '',
-                'leave' => $leave ? $leave->check_time->format('H:i') : '',
-                'workingTimes' => $workingTimes,
+            // 休憩時間の複数回の合計の計算
+            $rest_total = 0;
+            if($attendance_day){
+                $rests = Rest::where('attendance_id',$attendance_day->id)
+                            ->get();
+                foreach($rests as $rest){
+                    if($rest->rest_start && $rest->rest_end){
+                        $rest_start = Carbon::parse($rest->rest_start);
+                        $rest_end = Carbon::parse($rest->rest_end);
+
+                        $rest_total += $rest_start->diffInSeconds($rest_end);
+                    };
+                };
+                $rest_minutes = round($rest_total / 60);
+                $rest_hour = floor($rest_minutes / 60);
+                $rest_minute = $rest_minutes % 60;
+                $rest_time = sprintf('%02d:%02d',$rest_hour,$rest_minute);
+            }else{
+                $rest_time = '';
+            }
+
+            $records[] = [
+                'date' => $dateString,
+                'week' => $week,
+                'attendance' => $attendance_time ? $attendance_time->format('H:i') : '',
+                'leave' => $leave_time ? $leave_time->format('H:i') : '',
+                'workingTime' => $working_time,
+                'rest' => $rest_time,
             ];
         }
-        return view('common.list',compact('recodes'));
-    }
 
+        return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
+    }
 }
