@@ -13,6 +13,7 @@ Route::middleware('auth','verified')->group(function(){
     Route::post('/rest', [AttendanceController::class, 'rest']);
     Route::get('/detail', [AttendanceDetailController::class, 'detail']);
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
+    Route::get('/applyList', [AttendanceDetailController::class, 'applyList']);
 });
 
 

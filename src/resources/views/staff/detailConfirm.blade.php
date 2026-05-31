@@ -68,5 +68,4 @@
         <div class="comment__inner">
             <p class="comment">※申請中のため修正できません</p>
         </div>
-        
 @endsection
