@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <h1 class="title">勤怠一覧</h1>
     <div class="pagenation__box">
         <a class="page-link" href="/list?month={{$preMonth}}"><span class="arrow">◀</span>先月</a>
@@ -20,7 +25,7 @@
             </form>
         <a class="page-link" href="/list?month={{$nextMonth}}">翌月<span class="arrow">▶</span></a>
     </div>
-    <table class="table">
+    <table class="list-table">
         <tr class="header_row">
             <th class="header_item">日付</th>
             <th class="header_item">出勤</th>
