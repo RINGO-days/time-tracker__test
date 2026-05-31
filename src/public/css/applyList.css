@@ -1,0 +1,17 @@
+.title {
+    width: 60%;
+    margin: 40px auto;
+    position: relative;
+    padding-left: 15px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.title::before {
+    content: "";
+    background-color: #000000;
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    left: 0;
+}

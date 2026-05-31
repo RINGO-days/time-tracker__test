@@ -113,7 +113,7 @@ class AttendanceController extends Controller
             // 勤務時間の計算
             if($attendance_time && $leave_time){
                 $work_seconds = $attendance_time->diffInSeconds($leave_time);
-                $work_minutes = round($work_seconds / 60);
+                $work_minutes = floor($work_seconds / 60);
                 $hour = floor($work_minutes / 60);
                 $minute = $work_minutes % 60;
                 $working_time = sprintf('%02d:%02d', $hour, $minute);
@@ -153,10 +153,5 @@ class AttendanceController extends Controller
         }
 
         return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
-    }
-
-    public function detal()
-    {
-        return view('staff.detail');
     }
 }

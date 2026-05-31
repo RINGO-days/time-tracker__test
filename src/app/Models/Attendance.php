@@ -21,4 +21,9 @@ class Attendance extends Model
         'attendance_time' => 'datetime',
         'leave_time' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

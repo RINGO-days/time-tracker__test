@@ -70,7 +70,7 @@
     box-shadow: 0 4px 12px rgba(175, 238, 238, 0.4);
     transform: translateY(-2px);
 }
-.table{
+.list-table{
     width: 60%;
     margin: 0 auto;
     color: #737373;
@@ -86,10 +86,6 @@
 .header_item:first-child{
     border-radius: 8px 0 0 0;
     width: 25%;
-}
-.header_item:last-child{
-    border-radius: 0 8px 0 0;
-    width: 15%;
 }
 .item_row{
     background-color: #ffffff;

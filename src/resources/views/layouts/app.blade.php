@@ -33,7 +33,7 @@
                 <ul class="header__nav-item">
                     <li><a href="/">勤怠</a></li>
                     <li><a href="/list">勤怠一覧</a></li>
-                    <li><a href="">申請</a></li>
+                    <li><a href="/applyList">申請</a></li>
                     <li>
                         <form action="{{route('logout')}}" method="POST">
                             @csrf
