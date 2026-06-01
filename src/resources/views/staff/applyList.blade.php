@@ -11,37 +11,44 @@
 @section('main')
     <h1 class="title">申請一覧</h1>
     <div class="tab__box">
-        <a href="">承認待ち</a>
-        <a href="">承認済み</a>
+        <a class="tab-link {{request('tab') !== 'approved' ? 'active' : ''}}" href="?tab=pending">承認待ち</a>
+        <a class="tab-link {{request('tab') === 'approved' ? 'active' : ''}}" href="?tab=approved">承認済み</a>
     </div>
-    <table>
-        <tr>
-            <th>状態</th>
-            <th>名前</th>
-            <th>対象日時</th>
-            <th>申請理由</th>
-            <th>申請日時</th>
-            <th>詳細</th>
+    <table class="apply-table">
+        <tr class="header-raw">
+            <th class="header-item">状態</th>
+            <th class="header-item">名前</th>
+            <th class="header-item">対象日時</th>
+            <th class="header-item">申請理由</th>
+            <th class="header-item">申請日時</th>
+            <th class="header-item">詳細</th>
         </tr>
-        @foreach($proposals as $proposal)
-            <tr>
-                @switch($proposal->status)
-                    @case(1)
-                        <td>承認待ち</td>
-                        @break
-                    @case(2)
-                        <td>承認済み</td>
-                        @break
-                    @case(3)
-                        <td>棄却</td>
-                        @break
-                @endswitch
-                <td>{{$proposal->user->name}}</td>
-                <td>{{$proposal->attendance->attendance_date}}</td>
-                <td>{{$proposal->remarks}}</td>
-                <td>{{$proposal->created_at}}</td>
-                <td><a href="">詳細</a></td>
-            </tr>
-        @endforeach
+        @if(request('tab') !== 'approved')
+            @foreach($proposals as $proposal)
+                <tr class="item-raw">
+                    @switch($proposal->status)
+                        @case(1)
+                            <td class="table-item">承認待ち</td>
+                            @break
+                        @case(2)
+                            <td class="table-item">承認済み</td>
+                            @break
+                        @case(3)
+                            <td class="table-item">棄却</td>
+                            @break
+                    @endswitch
+                    <td class="table-item">{{$proposal->user->name}}</td>
+                    <td class="table-item">{{date('Y/m/d',strtotime($proposal->attendance->attendance_date))}}</td>
+                    <td class="table-item">{{$proposal->remarks}}</td>
+                    <td class="table-item">{{$proposal->updated_at->format('Y/m/d')}}</td>
+                    <td class="table-item">
+                        <a class="detail-link" href="/detail/propose/{{ $proposal->id }}">詳細</a>
+                    </td>
+                </tr>
+            @endforeach
+        @endif
+        <tr class="empty-raw">
+            <td class="empty-item" colspan="6"></td>
+        </tr>
     </table>
 @endsection

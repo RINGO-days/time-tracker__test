@@ -68,4 +68,11 @@ class AttendanceDetailController extends Controller
 
         return view('staff.applyList',compact('proposals'));
     }
+
+    public function detailConfirmShow($id)
+    {
+        $proposal = Proposal::with(['user','attendance'])->findOrFail($id);
+
+        return view('staff.detailConfirm',compact('proposal'));
+    }
 }

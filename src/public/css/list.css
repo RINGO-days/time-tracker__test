@@ -18,10 +18,12 @@
     display: flex;
     justify-content: space-between;
     width: 60%;
-    margin: 0 auto 5px auto;
-    padding: 0 50px;
+    margin: 0 auto 40px auto;
+    padding: 10px 50px;
     background-color: #ffffff;
     align-items: center;
+    border-radius: 8px;
+
 }
 .calender-label{
     display: inline-block;
@@ -67,30 +69,31 @@
 .page-link:hover {
     background-color: #AFEEEE;
     border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(175, 238, 238, 0.4);
     transform: translateY(-2px);
 }
 .list-table{
     width: 60%;
     margin: 0 auto;
     color: #737373;
-    border-collapse: separate;
-    border-spacing: 0 3px;
     text-align: center;
     line-height: 2.5;
 }
-.header_row{
-    border-radius: 8px 8px 0 0;
+.header-row{
     background-color: #ffffff;
+    border-bottom: #e1e1e1 5px solid;
 }
-.header_item:first-child{
+.header-item:first-child{
     border-radius: 8px 0 0 0;
     width: 25%;
 }
-.item_row{
-    background-color: #ffffff;
+.header-item:last-child{
+    border-radius: 0 8px 0 0;
 }
-.detail_button{
+.item-row{
+    background-color: #ffffff;
+    border-bottom: #e1e1e1 2px solid;
+}
+.detail-link{
     border: none;
     background-color: transparent;
     font-weight: 700;
@@ -98,7 +101,15 @@
     cursor: pointer;
     color: #000000;
     padding: 5px 10px;
+    text-decoration: none;
 }
-.detail_button:hover{
+.detail-link:hover{
     color: #FF7F50;
+}
+.empty-row{
+    background-color: #ffffff;
+}
+.empty-item{
+    border-top: #ffffff 2px solid;
+    border-radius: 0 0 8px 8px;
 }
