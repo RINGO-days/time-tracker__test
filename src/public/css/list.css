@@ -34,7 +34,7 @@
     color: transparent;
     border: none;
     width: 100%;
-    padding: 5px 10px;
+    padding: 5px 30px;
 }
 .date-input:hover{
     background-color: #AFEEEE;
@@ -84,7 +84,7 @@
 }
 .header-item:first-child{
     border-radius: 8px 0 0 0;
-    width: 25%;
+    width: 20%;
 }
 .header-item:last-child{
     border-radius: 0 8px 0 0;
