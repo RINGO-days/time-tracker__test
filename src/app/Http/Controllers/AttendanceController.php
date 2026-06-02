@@ -143,6 +143,7 @@ class AttendanceController extends Controller
             }
 
             $records[] = [
+                'id' => $attendance_day->id,
                 'date' => $dateString,
                 'week' => $week,
                 'attendance' => $attendance_time ? $attendance_time->format('H:i') : '',

@@ -9,7 +9,7 @@ Route::middleware('auth','verified')->group(function(){
     Route::get('/',[AttendanceController::class,'index']);
     Route::get('/list',[AttendanceController::class,'list']);
     Route::post('/attendance',[AttendanceController::class,'attendance']);
-    Route::get('/show',[AdminController::class,'show']);
+    Route::get('/dailyAttendance',[AdminController::class,'dailyAttendance']);
     Route::post('/rest', [AttendanceController::class, 'rest']);
     Route::get('/detail', [AttendanceDetailController::class, 'detail']);
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
