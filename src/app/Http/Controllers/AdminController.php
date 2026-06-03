@@ -53,7 +53,6 @@ class AdminController extends Controller
             }
         }
 
-
         return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
     }
 }

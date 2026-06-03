@@ -74,7 +74,7 @@
                             <input
                                 class="item-input" type="text"
                                 name="rest[{{$rest->id}}][rest_end]"
-                                value="{{old("rest.{$rest->id}.rest_end", $rest->rest_end->format('H:i'))}}"
+                                value="{{$rest->rest_end ? old("rest.{$rest->id}.rest_end", $rest->rest_end->format('H:i')) : ''}}"
                             >
                             <input type="hidden" name="rest[{{$rest->id}}][rest_id]" value="{{$rest->id}}">
                         </div>

@@ -37,8 +37,11 @@
                 <td>{{$dailyAttendance->rest_total}}</td>
                 <td>{{$dailyAttendance->actual_work_time}}</td>
                 <td>
-                    <a class="detail-link" href="">詳細</a>
+                    <a class="detail-link" href="/detail?date={{$targetDay->toDateString()}}&user_id={{$dailyAttendance->user->id}}">詳細</a>
                 </td>
             </tr>
         @endforeach
+        <tr class="empty-row">
+            <td class="empty-item" colspan="6"></td>
+        </tr>
 @endsection

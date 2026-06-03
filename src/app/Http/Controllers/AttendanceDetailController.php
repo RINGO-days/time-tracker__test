@@ -12,9 +12,16 @@ class AttendanceDetailController extends Controller
 {
     public function detail(Request $request)
     {
-        $attendance = Attendance::where('user_id',auth()->id())
-                    ->where('attendance_date',$request->query('date'))
-                    ->first();
+        if(auth()->user()->is_admin){
+            $attendance = Attendance::where('user_id',$request->query('user_id'))
+                        ->where('attendance_date',$request->query('date'))
+                        ->first();
+        }else{
+            $attendance = Attendance::where('user_id',auth()->id())
+                        ->where('attendance_date',$request->query('date'))
+                        ->first();
+        }
+
         if(!$attendance){
             return redirect("/list")->with('message','勤務記録がありませんでした。');
         }
@@ -27,7 +34,7 @@ class AttendanceDetailController extends Controller
             'name' => $attendance->user->name,
             'date' => $attendance->attendance_date,
             'attendance' => $attendance->attendance_time->format('H:i'),
-            'leave' => $attendance->leave_time->format('H:i'),
+            'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
         return view('staff.detail',compact('details','rests'));
     }
@@ -58,6 +65,32 @@ class AttendanceDetailController extends Controller
             'proposed_rest' => $proposal_rest,
             'remarks' => $request->remarks,
         ]);
+
+        if(auth()->user()->is_admin){
+            $attendance = Attendance::find($id);
+
+            $attendance->update([
+                'attendance_time' => $proposal_attendance['attendance_time'],
+                'leave_time' => $proposal_attendance['leave_time'],
+            ]);
+            foreach($proposal_rest as $restData){
+                if(!empty($restData['rest_id'])){
+                    Rest::where('id',$restData['rest_id'])
+                        ->update([
+                            'rest_start' => $restData['rest_start'],
+                            'rest_end' => $restData['rest_end'],
+                        ]);
+                }else{
+                    Rest::create([
+                        'attendance_id' => $attendance->id,
+                        'rest_start' => $restData['rest_start'],
+                        'rest_end' => $restData['rest_end'],
+                    ]);
+                }
+            }
+
+            return redirect('dailyAttendance');
+        }
 
         return view('staff.detailConfirm',compact('proposal'));
     }
