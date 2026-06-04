@@ -14,10 +14,14 @@
             <span class="flash-message">{{ session('message') }}</span>
         @endif
     </div>
-    <h1 class="title">勤怠一覧</h1>
+    @if(auth()->user()->is_admin)
+        <h1 class="title">{{$user->name}}の月次勤怠</h1>
+    @else
+        <h1 class="title">勤怠一覧</h1>
+    @endif
     <div class="pagenation__box">
         <a class="page-link" href="/list?month={{$preMonth}}"><span class="arrow">◀</span>先月</a>
-            <form action="/list" mothod="POST">
+            <form action="/list" method="POST">
                 <label class="calender-label" for="">
                     <input class="date-input" type="month" name="month" value="{{$targetMonth}}" onchange="this.form.submit()">
                     <span class="date-text">{{$targetMonth}}</span>
@@ -42,7 +46,11 @@
                 <td>{{$record['rest']}}</td>
                 <td>{{$record['workingTime']}}</td>
                 <td>
-                    <a class="detail-link" href="/detail?date={{$record['date']}}">詳細</a>
+                    @if(auth()->user()->is_admin)
+                        <a class="detail-link" href="/detail?date={{$record['date']}}&user_id={{$user->id}}">詳細</a>
+                    @else
+                        <a class="detail-link" href="/detail?date={{$record['date']}}">詳細</a>
+                    @endif
                 </td>
             </tr>
         @endforeach
@@ -50,4 +58,9 @@
             <td class="empty-item" colspan="6"></td>
         </tr>
     </table>
+    @if(auth()->user()->is_admin)
+        <div class="CSV-button__inner">
+            <button class="CSV-button">CSV出力</button>
+        </div>
+    @endif
 @endsection

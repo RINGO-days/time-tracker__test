@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Rest;
+use App\Models\User;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -95,9 +96,15 @@ class AttendanceController extends Controller
         $preMonth = $startOfMonth->copy()->subMonthNoOverflow()->format('Y-m');
         $nextMonth = $endOfMonth->copy()->addMonthNoOverflow()->format('Y-m');
 
-        $attendance_month = Attendance::where('user_id',auth()->id())
+        if(auth()->user()->is_admin){
+            $attendance_month = Attendance::where('user_id',$request->query('user_id'))
                             ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
                             ->get();
+        }else{
+            $attendance_month = Attendance::where('user_id',auth()->id())
+                                ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
+                                ->get();
+        }
 
         for($date = $startOfMonth->copy() ; $date->lte($endOfMonth) ; $date->addDay()){
             // 日付の文字列化、並びに曜日の出力
@@ -120,7 +127,7 @@ class AttendanceController extends Controller
             }else{
                 $working_time = '';
             };
-
+    
             // 休憩時間の複数回の合計の計算
             $rest_total = 0;
             if($attendance_day){
@@ -143,7 +150,7 @@ class AttendanceController extends Controller
             }
 
             $records[] = [
-                'id' => $attendance_day->id,
+                // 'id' => $attendance_day->id,
                 'date' => $dateString,
                 'week' => $week,
                 'attendance' => $attendance_time ? $attendance_time->format('H:i') : '',
@@ -152,7 +159,8 @@ class AttendanceController extends Controller
                 'rest' => $rest_time,
             ];
         }
+        $user = User::find($request->query('user_id'));
 
-        return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
+        return view('common.list',compact('records','preMonth','nextMonth','targetMonth','user'));
     }
 }

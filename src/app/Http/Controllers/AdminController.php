@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Rest;
+use App\Models\User;
 
 
 class AdminController extends Controller
@@ -54,5 +55,11 @@ class AdminController extends Controller
         }
 
         return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
+    }
+
+    public function staffList()
+    {
+        $users = User::all();
+        return view('admin.staffList',compact('users'),['nav' => 'admin']);
     }
 }
