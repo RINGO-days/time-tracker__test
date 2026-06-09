@@ -113,3 +113,18 @@
     border-top: #ffffff 2px solid;
     border-radius: 0 0 8px 8px;
 }
+.csv-button__inner{
+    width: 60%;
+    margin: 30px auto;
+    text-align: right;
+}
+.csv-button{
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+}
