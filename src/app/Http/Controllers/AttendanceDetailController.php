@@ -95,9 +95,20 @@ class AttendanceDetailController extends Controller
         return view('staff.detailConfirm',compact('proposal'));
     }
 
-    public function applyList()
+    public function applyList(Request $request)
     {
-        $proposals = Proposal::with(['user','attendance'])->get();
+        if(!auth()->user()->is_admin){
+            $proposals = Proposal::with(['user','attendance'])
+                            ->where('user_id',$request->user_id)
+                            ->get();
+
+            return view('staff.applyList',compact('proposals'));
+        }else{
+            $proposals = Proposal::with(['user','attendance'])
+                            ->get();
+            
+            return view('staff.applyList',compact('proposals'),['nav' => 'admin']);
+        }
 
         return view('staff.applyList',compact('proposals'));
     }

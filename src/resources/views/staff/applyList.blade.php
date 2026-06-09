@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <h1 class="title">申請一覧</h1>
     <div class="tab__box">
         <a class="tab-link {{request('tab') !== 'approved' ? 'active' : ''}}" href="?tab=pending">承認待ち</a>

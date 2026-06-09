@@ -13,7 +13,7 @@ Route::middleware('auth','verified')->group(function(){
     Route::get('/detail', [AttendanceDetailController::class, 'detail']);
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
     Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
-    Route::get('/applyList', [AttendanceDetailController::class, 'applyList']);
+    Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('admin');
     Route::get('/stamp_correction_request', [AttendanceDetailController::class, '']);
 
     Route::prefix('admin')->group(function(){
