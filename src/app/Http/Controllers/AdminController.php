@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\User;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Services\AttendanceService;
 
 
 class AdminController extends Controller
@@ -61,5 +63,44 @@ class AdminController extends Controller
     {
         $users = User::all();
         return view('admin.staffList',compact('users'),['nav' => 'admin']);
+    }
+
+    public function export(Request $request,AttendanceService $attendanceService)
+    {
+        extract($attendanceService->getMonthPeriod($request));
+
+        $fileName = '勤怠＿' . $targetMonth . '.csv';
+
+        $response = new StreamedResponse(function() use($startOfMonth,$endOfMonth,$attendanceService,$request){
+            $stream = fopen('php://output','w');
+
+            fwrite($stream,pack('C*', 0xEF, 0xBB, 0xBF));
+
+            $header = ['日付','出勤','退勤','休憩','合計'];
+            fputcsv($stream,$header);
+
+            $attendances = Attendance::where('user_id',$request->query('user_id'))
+                        ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
+                        ->get();
+
+
+                // $rest_time = $attendanceService->calculateRestTime($attendance);
+                // $actual_time = $attendanceService->calculateActualWorkTime($attendance);
+                $records = $attendanceService->getMonthlyRecords($request);
+                foreach($records as $row)
+                fputcsv($stream,[
+                    $row['date']."[".$row['week']."]",
+                    $row['attendance'],
+                    $row['leave'],
+                    $row['rest'],
+                    $row['actualTime'],
+                ]);
+            
+
+            fclose($stream);
+            });
+        $response->headers->set('Content-Type','text/csv');
+        $response->headers->set('Content-Disposition','attachment; filename="' . rawurlencode($fileName) . '"');
+        return $response;
     }
 }

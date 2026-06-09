@@ -19,6 +19,7 @@ Route::middleware('auth','verified')->group(function(){
     Route::prefix('admin')->group(function(){
         Route::get('/dailyAttendance',[AdminController::class,'dailyAttendance']);
         Route::get('/staff/list',[AdminController::class,'staffList']);
+        Route::get('/csvExport',[AdminController::class,'export']);
     });
 });
 

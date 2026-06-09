@@ -44,7 +44,7 @@
                 <td>{{$record['attendance']}}</td>
                 <td>{{$record['leave']}}</td>
                 <td>{{$record['rest']}}</td>
-                <td>{{$record['workingTime']}}</td>
+                <td>{{$record['actualTime']}}</td>
                 <td>
                     @if(auth()->user()->is_admin)
                         <a class="detail-link" href="/detail?date={{$record['date']}}&user_id={{$user->id}}">詳細</a>
@@ -59,8 +59,8 @@
         </tr>
     </table>
     @if(auth()->user()->is_admin)
-        <div class="CSV-button__inner">
-            <button class="CSV-button">CSV出力</button>
-        </div>
+            <div class="csv-button__inner">
+                <a class="csv-button" href="/admin/csvExport?user_id={{$user->id}}">CSV出力</a>
+            </div>
     @endif
 @endsection
