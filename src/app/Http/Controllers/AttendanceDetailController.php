@@ -97,19 +97,24 @@ class AttendanceDetailController extends Controller
 
     public function applyList(Request $request)
     {
-        if(!auth()->user()->is_admin){
-            $proposals = Proposal::with(['user','attendance'])
-                            ->where('user_id',$request->user_id)
-                            ->get();
+        $query = Proposal::with('user','attendance');
 
-            return view('staff.applyList',compact('proposals'));
-        }else{
-            $proposals = Proposal::with(['user','attendance'])
-                            ->get();
+        if(!auth()->user()->is_admin){
+            $query->where('user_id',auth()->id());
+        }
             
-            return view('staff.applyList',compact('proposals'),['nav' => 'admin']);
+        if($request->query('tab') == 'approved'){
+            $query->where('status',2);
+        }else{
+            $query->where('status',1);
         }
 
+        $proposals = $query->get();
+
+        if(auth()->user()->is_admin){
+            return view('staff.applyList',compact('proposals'),['nav' => 'admin']);
+        }
+        
         return view('staff.applyList',compact('proposals'));
     }
 
