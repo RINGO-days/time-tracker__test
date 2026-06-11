@@ -80,7 +80,7 @@
 }
 .fix-button__inner{
     width: 60%;
-    margin: 0 auto;
+    margin: 50px auto;
     text-align: right;
 }
 .fix-button{
@@ -89,10 +89,22 @@
     padding: 10px 35px;
     color: #ffffff;
     background-color: #000000;
-    margin-bottom: 15px;
     cursor: pointer;
     border-radius: 3px;
     border: none;
+}
+.approve-icon__inner{
+    width: 60%;
+    margin: 50px auto;
+    text-align: right;
+}
+.approve-icon{
+    font-size: 22px;
+    font-weight: 700;
+    padding: 10px 35px;
+    color: #ffffff;
+    background-color: #696969;
+    border-radius: 3px;
 }
 .table-item.name__area{
     padding-left: 33px;

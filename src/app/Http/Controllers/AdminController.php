@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\User;
+use App\Models\Proposal;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Services\AttendanceService;
 
@@ -102,5 +103,43 @@ class AdminController extends Controller
         $response->headers->set('Content-Type','text/csv');
         $response->headers->set('Content-Disposition','attachment; filename="' . rawurlencode($fileName) . '"');
         return $response;
+    }
+
+    public function requestShow($attendance_correct_request_id)
+    {
+        $proposal = Proposal::with(['user','attendance.rests'])->findOrFail($attendance_correct_request_id);
+
+        return view('admin.correctionApprove',compact('proposal'),['nav' => 'admin']);
+    }
+
+    public function approve(Request $request,$attendance_correct_request_id)
+    {
+        $proposal = Proposal::find($attendance_correct_request_id);
+
+        $proposal->attendance->update([
+            'attendance_time' => $proposal->proposed_attendance['attendance_time'],
+            'leave_time' => $proposal->proposed_attendance['leave_time'],
+        ]);
+
+        foreach($proposal->proposed_rest as $proposalRest){
+            if(!empty($proposalRest['rest_id'])){
+                Rest::where('id',$proposalRest['rest_id'])
+                    ->update([
+                        'rest_start' => $proposalRest['rest_start'],
+                        'rest_end' => $proposalRest['rest_end'],
+                    ]);
+            }else{
+                Rest::create([
+                    'attendance_id' => $proposal->attendance->id,
+                    'rest_start' => $proposalRest['rest_start'],
+                    'rest_end' => $proposalRest['rest_end'],
+                ]);
+            }
+        }
+        $proposal->update([
+            'status' => 2
+        ]);
+
+        return back();
     }
 }

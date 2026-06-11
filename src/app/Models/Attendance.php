@@ -31,4 +31,9 @@ class Attendance extends Model
     {
         return $this->hasMany(Rest::class);
     }
+
+    public function proposals()
+    {
+        return $this->hasMany(Proposal::class);
+    }
 }
