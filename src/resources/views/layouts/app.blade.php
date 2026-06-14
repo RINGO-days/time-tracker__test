@@ -34,6 +34,7 @@
                     <li><a href="/">勤怠</a></li>
                     <li><a href="/list">勤怠一覧</a></li>
                     <li><a href="/stamp_correction_request/list">申請</a></li>
+                    <li><a href="/attendance/report">レポート</a></li>
                     <li>
                         <form action="{{route('logout')}}" method="POST">
                             @csrf
