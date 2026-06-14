@@ -1,0 +1,70 @@
+.title{
+    width: 60%;
+    margin: 30px auto 10px auto;
+    font-weight: 700;
+    font-size: 30px;
+}
+.title__description{
+    width: 60%;
+    margin: 0 auto;
+    font-weight: 700;
+    font-size: 16px;
+}
+.sub-title{
+    width: 60%;
+    margin: 30px auto 10px auto;
+    font-weight: 700;
+    font-size: 20px;
+}
+.item__box__inner{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    gap: 10px;
+    margin: 0 auto;
+}
+.item__box{
+    flex: 1;
+    background-color: #d9d9d9;
+    border: #c1c1c1 1px solid;
+    border-radius: 5px;
+    padding-left: 20px;
+}
+.box-title{
+    font-weight: 700;
+    font-size: 14px;
+    color: #696969;
+}
+.box-content{
+    font-weight: 700;
+    font-size: 30px;
+    margin-top: 10px;
+}
+.monthly-table__inner{
+    margin: 0 auto;
+    width: 60%;
+}
+.monthly-table{
+    width: 100%;
+}
+.header-row{
+    border-bottom: #c1c1c1 1px solid;
+    font-weight: 700;
+    font-size: 18px;
+}
+.item-row{
+    border-bottom: #c1c1c1 1px solid;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 2.5;
+}
+.sub-title__description{
+    color: #696969;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 auto;
+    width: 60%;
+}
+/* *{
+    border: red 1px solid;
+} */

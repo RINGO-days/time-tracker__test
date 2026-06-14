@@ -15,6 +15,7 @@ Route::middleware('auth','verified')->group(function(){
     Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
     Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('admin');
     Route::get('/stamp_correction_request', [AttendanceDetailController::class, '']);
+    Route::get('/attendance/report',[AttendanceController::class,'report']);
 
     Route::prefix('admin')->group(function(){
         Route::get('/dailyAttendance',[AdminController::class,'dailyAttendance']);
