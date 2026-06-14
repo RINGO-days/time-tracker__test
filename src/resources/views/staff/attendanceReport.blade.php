@@ -48,15 +48,15 @@
     <div class="item__box__inner">
         <div class="item__box">
             <p class="box-title">遅刻回数</p>
-            <p class="box-content">{{$lateCount}}</p>
+            <p class="box-content">{{$lateCount}}回</p>
         </div>
         <div class="item__box">
             <p class="box-title">早退回数</p>
-            <p class="box-content">{{$leaveEarlyCount}}</p>
+            <p class="box-content">{{$leaveEarlyCount}}回</p>
         </div>
         <div class="item__box">
-            <p class="box-title">長時間労働回数</p>
-            <p class="box-content">{{$over10HourCount}}</p>
+            <p class="box-title">長時間労働日数</p>
+            <p class="box-content">{{$over10HourCount}}日</p>
         </div>
     </div>
 @endsection

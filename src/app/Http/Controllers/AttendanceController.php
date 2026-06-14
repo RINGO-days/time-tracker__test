@@ -132,31 +132,26 @@ class AttendanceController extends Controller
                     $dayMinutes = (Carbon::parse($totalTimeStr)->hour * 60) + (Carbon::parse($totalTimeStr)->minute);
                     $totalMinutes += $dayMinutes;
                     $monthlyTotalMinutes[$month] += $dayMinutes;
+                    // 残業時間の計算
+                    if (!empty($dayWorkTime->leave_time)) {
+                        if($dayMinutes > 480){
+                            $dayOvertimeMinutes = $dayMinutes - 480;
+                            $totalOverTimeMinutes += $dayOvertimeMinutes;
+                            $monthlyTotalOverMinutes[$month] += $dayOvertimeMinutes;
+                        }
 
-                    // 長時間労働回数（10時間超）のカウント
-                    if($dayMinutes >= 600){
-                        $over10HourCount ++;
-                    }
-                    
-
-                }
-
-                // 残業時間の計算
-                if (!empty($dayWorkTime->leave_time)) {
-                    $overtime_line = Carbon::parse($dayWorkTime->leave_time)->setTime(18,0,0);
-                    $work_end = Carbon::parse($dayWorkTime->leave_time);
-                    if($work_end->greaterThan($overtime_line)){
-                        $dayOverMinutes = $overtime_line->diffInMinutes($work_end);
-                        $totalOverTimeMinutes += $dayOverMinutes;
-                        $monthlyTotalOverMinutes[$month] += $dayOverMinutes;
+                        // 長時間労働回数（10時間超）のカウント
+                        if($dayMinutes >= 600){
+                            $over10HourCount ++;
+                        }
                     }
 
                     // 早退回数のカウント
-                    // $leaving_line = Carbon::parse($dayWorkTime->attendance_time)->setTime(17,0,0);
+                    $work_end = Carbon::parse($dayWorkTime->leave_time);
+                    $overtime_line = Carbon::parse($dayWorkTime->leave_time)->setTime(18,0,0);
                     if($work_end->lessThan($overtime_line)){
                         $leaveEarlyCount ++;
                     }
-
 
                 }
                 // 遅刻回数のカウント
@@ -167,12 +162,10 @@ class AttendanceController extends Controller
                         $lateCount ++;
                     }
                 }
-
-
             }
         }
         // 1日の平均労働時間の計算のための６ヶ月間の日数
-        $startDay = now()->subMonths(6)->startOfDay();
+        $startDay = now()->subMonths(5)->startOfDay();
         $endDay = now()->endOfDay();
         $totalDays = $endDay->diffInDays($startDay);
 
