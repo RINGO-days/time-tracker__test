@@ -97,4 +97,97 @@ class AttendanceController extends Controller
 
         return view('common.list',compact('records','preMonth','nextMonth','targetMonth','user'));
     }
+
+    public function report(AttendanceService $attendanceService)
+    {
+        $halfYearWorkTime = Attendance::where('user_id',auth()->id())
+                            ->whereBetween('attendance_date',[now()->submonth(5)->startOfDay(),now()->endOfDay()])
+                            ->get();
+        
+        $totalMinutes = 0;
+        $totalOverTimeMinutes = 0;
+        $monthlyData = [];
+        $lateCount = 0;
+        $leaveEarlyCount = 0;
+        $over10HourCount= 0;
+
+        for($i = 5; $i >= 0; $i --){
+            $monthKey = now()->subMonths($i)->format('Y-m');
+            $monthlyData[$monthKey] = collect();
+        }
+        $monthlyLabel = $halfYearWorkTime->groupBy(function($monthly){
+            return Carbon::parse($monthly->attendance_date)->format('Y-m');
+        });
+        foreach($monthlyLabel as $month => $days){
+            $monthlyData[$month] = $days;
+        }
+
+        // 6ヶ月の総労働時間と月毎の労働時間の計算
+        foreach($monthlyData as $month => $days){
+            $monthlyTotalMinutes[$month] = 0;
+            $monthlyTotalOverMinutes[$month] = 0;
+            foreach($days as $dayWorkTime){
+                $totalTimeStr = $attendanceService->calculateActualWorkTime($dayWorkTime);
+                if(!empty($totalTimeStr)){
+                    $dayMinutes = (Carbon::parse($totalTimeStr)->hour * 60) + (Carbon::parse($totalTimeStr)->minute);
+                    $totalMinutes += $dayMinutes;
+                    $monthlyTotalMinutes[$month] += $dayMinutes;
+
+                    // 長時間労働回数（10時間超）のカウント
+                    if($dayMinutes >= 600){
+                        $over10HourCount ++;
+                    }
+                    
+
+                }
+
+                // 残業時間の計算
+                if (!empty($dayWorkTime->leave_time)) {
+                    $overtime_line = Carbon::parse($dayWorkTime->leave_time)->setTime(18,0,0);
+                    $work_end = Carbon::parse($dayWorkTime->leave_time);
+                    if($work_end->greaterThan($overtime_line)){
+                        $dayOverMinutes = $overtime_line->diffInMinutes($work_end);
+                        $totalOverTimeMinutes += $dayOverMinutes;
+                        $monthlyTotalOverMinutes[$month] += $dayOverMinutes;
+                    }
+
+                    // 早退回数のカウント
+                    // $leaving_line = Carbon::parse($dayWorkTime->attendance_time)->setTime(17,0,0);
+                    if($work_end->lessThan($overtime_line)){
+                        $leaveEarlyCount ++;
+                    }
+
+
+                }
+                // 遅刻回数のカウント
+                if(!empty($dayWorkTime->attendance_time)){
+                    $lateness_line = Carbon::parse($dayWorkTime->attendance_time)->setTime(9,0,0);
+                    $work_start = Carbon::parse($dayWorkTime->attendance_time);
+                    if($work_start->greaterThan($lateness_line)){
+                        $lateCount ++;
+                    }
+                }
+
+
+            }
+        }
+        // 1日の平均労働時間の計算のための６ヶ月間の日数
+        $startDay = now()->subMonths(6)->startOfDay();
+        $endDay = now()->endOfDay();
+        $totalDays = $endDay->diffInDays($startDay);
+
+
+        return view('staff.attendanceReport',compact(
+            'totalMinutes',
+            'totalOverTimeMinutes',
+            'totalDays',
+            'halfYearWorkTime',
+            'monthlyData',
+            'monthlyTotalMinutes',
+            'monthlyTotalOverMinutes',
+            'lateCount',
+            'leaveEarlyCount',
+            'over10HourCount',
+        ));
+    }
 }
