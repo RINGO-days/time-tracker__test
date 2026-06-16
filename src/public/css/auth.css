@@ -13,6 +13,7 @@
 .input-title{
     font-size: 24px;
     font-weight: 700;
+    user-select: none;
 }
 .input{
     display: block;
@@ -21,9 +22,11 @@
     font-size: 24px;
     border: 1px #000000 solid;
     border-radius: 5px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 .input:hover{
-    background-color: #e5e5e5;
+    background-color: #e1e1e1;
+    border-color: #007bff;
 }
 .button__submit{
     width: 100%;
@@ -36,9 +39,18 @@
     font-size: 26px;
     font-weight: 700;
     cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 .button__submit:hover{
     color: #cccccc;
+    background: linear-gradient(#333333,#000000);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+.button__submit:active{
+    background: linear-gradient(#000000, #333333);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    opacity: 0.85;
 }
 .link__inner{
     width: 100%;
@@ -51,6 +63,7 @@
     font-weight: 200;
     text-align: center;
     padding: 10px 40px;
+    color: #0073cc;
 }
 .link:hover{
     text-decoration: underline;

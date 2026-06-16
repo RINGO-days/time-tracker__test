@@ -37,8 +37,8 @@
             @foreach($monthlyData as $month => $days)
                 <tr class="item-row">
                     <td class="item-cell">{{$month}}</td>
-                    <td>{{floor($monthlyTotalMinutes[$month]/60)}}h {{$monthlyTotalMinutes[$month]%60}}m</td>
-                    <td>{{floor($monthlyTotalOverMinutes[$month]/60)}}h {{$monthlyTotalOverMinutes[$month]%60}}m</td>
+                    <td class="item-cell">{{floor($monthlyTotalMinutes[$month]/60)}}h {{$monthlyTotalMinutes[$month]%60}}m</td>
+                    <td class="item-cell">{{floor($monthlyTotalOverMinutes[$month]/60)}}h {{$monthlyTotalOverMinutes[$month]%60}}m</td>
                 </tr>
             @endforeach
         </table>

@@ -84,6 +84,13 @@
 }
 .header-item:first-child{
     border-radius: 8px 0 0 0;
+}
+/* *{
+    border: red 1px solid;
+} */
+.header-item:first-child,.item-cell:first-child{
+    padding-left: 5%;
+    text-align: left;
     width: 20%;
 }
 .header-item:last-child{

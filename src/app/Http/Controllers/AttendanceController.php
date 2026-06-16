@@ -21,21 +21,21 @@ class AttendanceController extends Controller
             ->latest()->first();
 
         if(!$todayAttendance){
-            $status = '勤務外';
+            $condition = '勤務外';
         }else{
             switch($todayAttendance->status){
                 case 1:
-                    $status = '出勤中';
+                    $condition = '出勤中';
                     break;
                 case 2:
-                    $status = '休憩中';
+                    $condition = '休憩中';
                     break;
                 case 3:
-                    $status = '退勤済';
+                    $condition = '退勤済';
                     break;
             }
         }
-        return view('staff.attendance',compact('status','todayWeek'));
+        return view('staff.attendance',compact('condition','todayWeek'));
     }
 
     public function attendance()

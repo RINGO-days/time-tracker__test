@@ -1,3 +1,12 @@
+<!-- 出勤時のステータスに応じでヘッダーを変える -->
+@php
+    use App\Models\Attendance;
+    $status = Attendance::where('attendance_date',today()->format('Y-m-d'))
+                        ->where('user_id',auth()->id())
+                        ->latest()
+                        ->value('status');
+@endphp
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -31,8 +40,12 @@
         @elseif($nav ?? true)
             <nav>
                 <ul class="header__nav-item">
-                    <li><a href="/">勤怠</a></li>
-                    <li><a href="/list">勤怠一覧</a></li>
+                    @if($status === 3)
+                        <li><a href="/list">今月の出勤一覧</a></li>
+                    @else
+                        <li><a href="/">勤怠</a></li>
+                        <li><a href="/list">勤怠一覧</a></li>
+                    @endif
                     <li><a href="/stamp_correction_request/list">申請</a></li>
                     <li><a href="/attendance/report">レポート</a></li>
                     <li>

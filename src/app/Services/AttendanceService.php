@@ -95,6 +95,7 @@ class AttendanceService
         foreach($period as $date){
             // 日付の文字列化、並びに曜日の出力
             $dateString = $date->toDateString();
+            $dateFormat = $date->format('m/d');
             $weeks = ['日','月','火','水','木','金','土'];
             $week = $weeks[$date->dayOfWeek];
 
@@ -121,6 +122,7 @@ class AttendanceService
 
             $records[] = [
                 'date' => $dateString,
+                'dateFormat' => $dateFormat,
                 'week' => $week,
                 'attendance' => $attendance_time ? $attendance_time->format('H:i') : '',
                 'leave' => $leave_time ? $leave_time->format('H:i') : '',

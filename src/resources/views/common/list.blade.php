@@ -40,12 +40,12 @@
         </tr>
         @foreach($records as $record)
             <tr class="item-row">
-                <td>{{$record['date']}}（{{$record['week']}}）</td>
-                <td>{{$record['attendance']}}</td>
-                <td>{{$record['leave']}}</td>
-                <td>{{$record['rest']}}</td>
-                <td>{{$record['actualTime']}}</td>
-                <td>
+                <td class="item-cell">{{$record['dateFormat']}}（{{$record['week']}}）</td>
+                <td class="item-cell">{{$record['attendance']}}</td>
+                <td class="item-cell">{{$record['leave']}}</td>
+                <td class="item-cell">{{$record['rest']}}</td>
+                <td class="item-cell">{{$record['actualTime']}}</td>
+                <td class="item-cell">
                     @if(auth()->user()->is_admin)
                         <a class="detail-link" href="/detail?date={{$record['date']}}&user_id={{$user->id}}">詳細</a>
                     @else
