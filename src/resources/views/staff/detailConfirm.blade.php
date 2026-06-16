@@ -9,12 +9,7 @@
 @endsection
 
 @section('main')
-    <div class="flash-message__box">
-        @if (session('success'))
-            <span class="flash-message">{{ session('success') }}</span>
-        @endif
-    </div>
-    <h1 class="title">勤怠詳細</h1>
+    <h1 class="title confirm">勤怠詳細</h1>
     <table class="detail-table">
             <tr class="table-raw">
                 <th class="header-item">名前</th>

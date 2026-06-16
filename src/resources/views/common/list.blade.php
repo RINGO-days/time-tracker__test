@@ -20,7 +20,7 @@
         <h1 class="title">勤怠一覧</h1>
     @endif
     <div class="pagenation__box">
-        <div class="link__box" for="">
+        <div class="link__box">
             <a class="page-link" href="/list?month={{$preMonth}}">
                 <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="先月へ">
                 <span>先月</span>
@@ -33,7 +33,7 @@
                     <input class="date-input" id= "date-input" type="month" value="{{$targetMonth}}" name="month" onchange="this.form.submit()">
                 </label>
             </form>
-        <div class="link__box" for="">
+        <div class="link__box">
             <a class="page-link" href="/list?month={{$nextMonth}}">
                 <span>翌月</span>
                 <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月へ">

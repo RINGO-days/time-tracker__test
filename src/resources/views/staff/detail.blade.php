@@ -128,7 +128,7 @@
                 <th class="header-item">備考</th>
                 <td class="table-item">
                     <div class="item-input__box">
-                        <textarea class="remarks-area" name="remarks" rows="3"></textarea>
+                        <textarea class="remarks-area" name="remarks" rows="3">{{old('remarks')}}</textarea>
                     </div>
                     @error('remarks')
                         <div class="error-box">
