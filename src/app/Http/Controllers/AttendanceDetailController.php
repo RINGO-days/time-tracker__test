@@ -47,7 +47,7 @@ class AttendanceDetailController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        return view('staff.detail',compact('details','rests'));
+        return view('common.detail',compact('details','rests'));
     }
 
     public function propose(ProposalRequest $request,$id)
@@ -100,7 +100,7 @@ class AttendanceDetailController extends Controller
                 }
             }
 
-            return redirect('dailyAttendance');
+            return redirect('/admin/attendance/list');
         }
 
         return view('staff.detailConfirm',compact('proposal'));

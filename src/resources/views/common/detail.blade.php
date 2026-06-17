@@ -10,7 +10,7 @@
 
 @section('main')
     <h1 class="title">勤怠詳細</h1>
-    <form action="detail/propose/{{$details['id']}}" method="POST">
+    <form action="/detail/propose/{{$details['id']}}" method="POST">
         @csrf
         <table class="detail-table">
             <tr class="table-raw">

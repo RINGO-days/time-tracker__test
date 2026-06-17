@@ -39,6 +39,26 @@ class AdminController extends Controller
         return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
     }
 
+    public function editDetail(Request $request,$id)
+    {
+        $attendance = Attendance::with('user')
+                    ->where('user_id',$id)
+                    ->where('attendance_date',$request->query('date'))
+                    ->first(); 
+
+        $rests = Rest::where('attendance_id',$attendance->id)
+                    ->get();
+
+        $details = [
+            'id' => $attendance->id,
+            'name' => $attendance->user->name,
+            'date' => $attendance->attendance_date,
+            'attendance' => $attendance->attendance_time->format('H:i'),
+            'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
+        ];
+        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
+    }
+
     public function staffList()
     {
         $users = User::all();

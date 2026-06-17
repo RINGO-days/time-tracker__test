@@ -48,7 +48,7 @@
                 <td class="item-cell">{{$dailyAttendance->rest_total_str}}</td>
                 <td class="item-cell">{{$dailyAttendance->actual_work_time_str}}</td>
                 <td class="item-cell">
-                    <a class="detail-link" href="/admin/attendance/{{$dailyAttendance->user->id}}">詳細</a>
+                    <a class="detail-link" href="/admin/attendance/{{$dailyAttendance->user->id}}?date={{$targetDay->toDateString()}}">詳細</a>
                 </td>
             </tr>
         @endforeach
