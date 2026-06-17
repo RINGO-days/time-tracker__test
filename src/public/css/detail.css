@@ -139,6 +139,7 @@
 }
 .remarks-box{
     padding: 33px;
+    margin-left: -20px;
 }
 .comment__inner{
     width: 60%;

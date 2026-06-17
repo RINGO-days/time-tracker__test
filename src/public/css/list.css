@@ -2,7 +2,7 @@
     width: 60%;
     margin: 40px auto;
     position: relative;
-    padding-left: 15px;
+    padding-left: 30px;
     font-size: 30px;
     font-weight: 700;
 }
@@ -23,7 +23,6 @@
     background-color: #ffffff;
     align-items: center;
     border-radius: 8px;
-
 }
 .calender-label{
     display: flex;

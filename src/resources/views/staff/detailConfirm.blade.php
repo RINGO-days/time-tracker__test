@@ -23,7 +23,7 @@
                     <div class="item-input__box">
                         <span>{{date('Y年',strtotime($proposal->attendance->attendance_date))}}</span>
                         <span></span>
-                        <span>{{date('m月d日',strtotime($proposal->attendance->attendance_date))}}</span>
+                        <span>{{date('n月j日',strtotime($proposal->attendance->attendance_date))}}</span>
                     </div>
                 </td>
             </tr>
