@@ -14,7 +14,7 @@
             <span class="flash-message">{{ session('success') }}</span>
         @endif
     </div>
-    <h1 class="title">勤怠詳細</h1>
+    <h1 class="title approve">勤怠詳細</h1>
     <form action="/admin/stamp_correction_request/approve/update/{{$proposal->id}}" method="post">
         @csrf
         <table class="detail-table">

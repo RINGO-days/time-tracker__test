@@ -9,6 +9,9 @@
 .title.confirm{
     margin-bottom: 90px;
 }
+.title.approve{
+    margin-top: 40px;
+}
 .title::before {
     content: "";
     background-color: #000000;
