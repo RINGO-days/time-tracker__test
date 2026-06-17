@@ -17,6 +17,10 @@ class AttendanceDetailController extends Controller
                     ->where('attendance_date',$request->query('date'))
                     ->first();
 
+        if(!$attendance){
+            return redirect("/list")->with('message','勤務記録がありませんでした。');
+        }
+
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
                     ->where('attendance_id',$attendance->id)
@@ -26,9 +30,6 @@ class AttendanceDetailController extends Controller
             return view('staff.detailConfirm',compact('proposal'));
         }
 
-        if(!$attendance){
-            return redirect("/list")->with('message','勤務記録がありませんでした。');
-        }
         
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
