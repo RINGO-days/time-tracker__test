@@ -9,7 +9,7 @@
 @endsection
 
 @section('main')
-    <h1 class="title">{{$targetDay->format('Y年m月d日')}}の勤怠</h1>
+    <h1 class="title">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
     <div class="pagenation__box">
         <div class="link__box">
             <a class="page-link" href="?day={{$preDay}}">
