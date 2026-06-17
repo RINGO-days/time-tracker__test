@@ -17,7 +17,7 @@
                 <span>先日</span>
             </a>
         </div>
-            <form action="/list" method="GET">
+            <form action="/admin/dailyAttendance" method="GET">
                 <label class="calender-label" for="date-input">
                     <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
                     <span class="date-text">{{\Carbon\Carbon::parse($targetDay)->format('Y/m/d')}}</span>
@@ -45,8 +45,8 @@
                 <td class="item-cell name">{{$dailyAttendance->user->name}}</td>
                 <td class="item-cell">{{$dailyAttendance->attendance_time->format('H:i')}}</td>
                 <td class="item-cell">{{$dailyAttendance->leave_time ? $dailyAttendance->leave_time->format(('H:i')) : ''}}</td>
-                <td class="item-cell">{{$dailyAttendance->rest_total}}</td>
-                <td class="item-cell">{{$dailyAttendance->actual_work_time}}</td>
+                <td class="item-cell">{{$dailyAttendance->rest_total_str}}</td>
+                <td class="item-cell">{{$dailyAttendance->actual_work_time_str}}</td>
                 <td class="item-cell">
                     <a class="detail-link" href="/detail?date={{$targetDay->toDateString()}}&user_id={{$dailyAttendance->user->id}}">詳細</a>
                 </td>

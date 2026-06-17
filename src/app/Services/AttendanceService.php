@@ -35,18 +35,20 @@ class AttendanceService
         }
         $rests = Rest::where('attendance_id',$attendanceDay->id)
                     ->get();
-        $rest_total = 0;
+        $rest_total_minutes = 0;
         foreach($rests as $rest){
             if($rest->rest_start && $rest->rest_end){
                 $rest_start = Carbon::parse($rest->rest_start);
                 $rest_end = Carbon::parse($rest->rest_end);
 
-                $rest_total += $rest_start->diffInSeconds($rest_end);
+                $rest_start_trunk = $rest_start->copy()->startOfMinute();
+                $rest_end_trunk = $rest_end->copy()->startOfMinute();
+
+                $rest_total_minutes += $rest_start_trunk->diffInMinutes($rest_end_trunk);
             }
         }
-        $rest_minutes = floor($rest_total / 60);
-        $rest_hour = floor($rest_minutes / 60);
-        $rest_minute = floor($rest_minutes % 60);
+        $rest_hour = floor($rest_total_minutes / 60);
+        $rest_minute = floor($rest_total_minutes % 60);
 
         $rest_time = sprintf('%02d:%02d',$rest_hour,$rest_minute);
         
@@ -61,14 +63,16 @@ class AttendanceService
         $work_start = Carbon::parse($attendanceDay->attendance_time);
         $work_end = Carbon::parse($attendanceDay->leave_time);
 
-        $total_work_seconds = $work_start->diffInSeconds($work_end);
+        $work_start_trunk = $work_start->copy()->startOfMinute();
+        $work_end_trunk = $work_end->copy()->startOfMinute();
+
+        $total_work_minutes = $work_start_trunk->diffInMinutes($work_end_trunk);
 
         $rest_time = Carbon::parse($this->calculateRestTime($attendanceDay));
-        $rest_seconds = ($rest_time->hour * 3600) + ($rest_time->minute *60);
+        $rest_minutes = ($rest_time->hour * 60) + ($rest_time->minute);
 
-        $total_actual_seconds = $total_work_seconds - $rest_seconds;
+        $total_actual_minutes = $total_work_minutes - $rest_minutes;
 
-        $total_actual_minutes = floor($total_actual_seconds / 60);
         $total_actual_hour = floor($total_actual_minutes / 60); 
         $total_actual_minute = floor($total_actual_minutes % 60);
 
