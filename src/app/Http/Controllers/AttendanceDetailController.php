@@ -20,11 +20,22 @@ class AttendanceDetailController extends Controller
             $attendance = Attendance::where('user_id',auth()->id())
                         ->where('attendance_date',$request->query('date'))
                         ->first();
+
+            $proposal = Proposal::with('user','attendance')
+                        ->where('user_id',auth()->id())
+                        ->where('attendance_id',$attendance->id)
+                        ->first();
+
+            if($proposal && $proposal->status === 1){   
+                return view('staff.detailConfirm',compact('proposal'));
+            }
         }
 
         if(!$attendance){
             return redirect("/list")->with('message','勤務記録がありませんでした。');
         }
+
+        
 
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
