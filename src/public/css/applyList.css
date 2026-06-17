@@ -34,6 +34,7 @@
     margin-bottom: 10px;
     border-radius: 30px;
     transition: background-color 0.2s ease,color 0.2s ease;
+    letter-spacing: 0.15em;
 }
 .tab-link.active{
     color: #000000;
@@ -52,6 +53,7 @@
     font-size: 16px;
     font-weight: 700;
     text-align: left;
+    letter-spacing: 0.15em;
 }
 .header-raw{
     background-color: #ffffff;
@@ -74,21 +76,31 @@
 .table-item:first-child{
     text-align: center;
 }
-.table-item:last-child{
-    text-align: left;
-}
 .header-item:first-child,.table-item:first-child {
     width: 18%;
 }
 .header-item:nth-child(2),.table-item:nth-child(2){
-    width: 15%;
-    /* padding-left: 20px; */
+    width: 12%;
 }
 .header-item:nth-child(3),.table-item:nth-child(3){
     width: 20%;
 }
 .header-item:nth-child(4),.table-item:nth-child(4){
+    width: 20%;
+}
+.header-item:nth-child(5),.table-item:nth-child(5){
     width: 15%;
+}
+.header-item:last-child,.table-item:last-child{
+    text-align: center;
+    width: 20%;
+    padding-right: 7%;
+}
+.table-item:nth-child(3){
+    letter-spacing: 0;
+}
+.table-item:nth-child(5){
+    letter-spacing: 0;
 }
 .detail-link{
     text-decoration: none;
