@@ -14,11 +14,7 @@
             <span class="flash-message">{{ session('message') }}</span>
         @endif
     </div>
-    @if(auth()->user()->is_admin)
-        <h1 class="title">{{$user->name}}の月次勤怠</h1>
-    @else
-        <h1 class="title">勤怠一覧</h1>
-    @endif
+    <h1 class="title">勤怠一覧</h1>
     <div class="pagenation__box">
         <div class="link__box">
             <a class="page-link" href="/list?month={{$preMonth}}">
@@ -69,9 +65,4 @@
             <td class="empty-item" colspan="6"></td>
         </tr>
     </table>
-    @if(auth()->user()->is_admin)
-            <div class="csv-button__inner">
-                <a class="csv-button" href="/admin/csvExport?user_id={{$user->id}}">CSV出力</a>
-            </div>
-    @endif
 @endsection

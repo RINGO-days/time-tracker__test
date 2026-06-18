@@ -93,9 +93,8 @@ class AttendanceController extends Controller
         extract($attendanceService->getMonthPeriod($request));
 
         $records = $attendanceService->getMonthlyRecords($request);
-        $user = User::find($request->query('user_id'));
 
-        return view('common.list',compact('records','preMonth','nextMonth','targetMonth','user'));
+        return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
     }
 
     public function report(AttendanceService $attendanceService)
