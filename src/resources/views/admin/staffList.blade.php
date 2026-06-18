@@ -21,7 +21,7 @@
                 <td class="item-cell">{{$user->name}}</td>
                 <td class="item-cell">{{$user->email}}</td>
                 <td class="item-cell">
-                    <a class="detail-link" href="/list?user_id={{$user->id}}">詳細</a>
+                    <a class="detail-link" href="/admin/attendance/staff/{{$user->id}}">詳細</a>
                 </td>
             </tr>
         @endforeach

@@ -86,7 +86,7 @@ class AttendanceService
         extract($this->getMonthPeriod($request));
 
         if(auth()->user()->is_admin){
-            $attendance_month = Attendance::where('user_id',$request->query('user_id'))
+            $attendance_month = Attendance::where('user_id',$request->id)
                                 ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
                                 ->get();
         }else{

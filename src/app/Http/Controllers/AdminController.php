@@ -65,6 +65,15 @@ class AdminController extends Controller
         return view('admin.staffList',compact('users'),['nav' => 'admin']);
     }
 
+    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id)
+    {
+        extract($attendanceService->getMonthPeriod($request));
+        $records = $attendanceService->getMonthlyRecords($request);
+        $user = User::find($id);
+
+        return view('admin.staffMonthlyAttendance',compact('records','preMonth','nextMonth','targetMonth','user'),['nav' => 'admin']);
+    }
+
     public function export(Request $request,AttendanceService $attendanceService)
     {
         extract($attendanceService->getMonthPeriod($request));
