@@ -77,8 +77,9 @@ class AdminController extends Controller
     public function export(Request $request,AttendanceService $attendanceService)
     {
         extract($attendanceService->getMonthPeriod($request));
+        $user = User::find($request->id);
 
-        $fileName = '勤怠＿' . $targetMonth . '.csv';
+        $fileName = $user->name . 'さんの勤怠＿' . $targetMonth . '.csv';
 
         $response = new StreamedResponse(function() use($startOfMonth,$endOfMonth,$attendanceService,$request){
             $stream = fopen('php://output','w');
@@ -88,15 +89,9 @@ class AdminController extends Controller
             $header = ['日付','出勤','退勤','休憩','合計'];
             fputcsv($stream,$header);
 
-            $attendances = Attendance::where('user_id',$request->query('user_id'))
-                        ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
-                        ->get();
+            $records = $attendanceService->getMonthlyRecords($request);
 
-
-                // $rest_time = $attendanceService->calculateRestTime($attendance);
-                // $actual_time = $attendanceService->calculateActualWorkTime($attendance);
-                $records = $attendanceService->getMonthlyRecords($request);
-                foreach($records as $row)
+            foreach($records as $row)
                 fputcsv($stream,[
                     $row['date']."[".$row['week']."]",
                     $row['attendance'],
@@ -104,7 +99,6 @@ class AdminController extends Controller
                     $row['rest'],
                     $row['actualTime'],
                 ]);
-            
 
             fclose($stream);
             });

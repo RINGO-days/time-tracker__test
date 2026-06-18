@@ -65,9 +65,7 @@
             <td class="empty-item" colspan="6"></td>
         </tr>
     </table>
-    @if(auth()->user()->is_admin)
-            <div class="csv-button__inner">
-                <a class="csv-button" href="/admin/csvExport?user_id={{$user->id}}">CSV出力</a>
-            </div>
-    @endif
+    <div class="csv-button__inner">
+        <a class="csv-button" href="/admin/csvExport/{{$user->id}}">CSV出力</a>
+    </div>
 @endsection
