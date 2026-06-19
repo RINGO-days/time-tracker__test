@@ -42,12 +42,15 @@ class AdminController extends Controller
     public function editDetail(Request $request,$id)
     {
         $attendance = Attendance::with('user')
-                    ->where('user_id',$id)
-                    ->where('attendance_date',$request->query('date'))
-                    ->first(); 
+                    ->find($id);
+
+        if(!$attendance){
+            return redirect('/admin/attendance/staff')->with('message','勤怠記録がありませんでした。');
+        }
 
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
+
 
         $details = [
             'id' => $attendance->id,

@@ -22,7 +22,7 @@
                 <span>先月</span>
             </a>
         </div>
-            <form action="/list" method="GET">
+            <form action="/admin/attendance/list" method="GET">
                 <label class="calender-label" for="date-input">
                     <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
                     <span class="date-text">{{\Carbon\Carbon::parse($targetMonth)->format('Y/n')}}</span>
@@ -53,7 +53,11 @@
                 <td class="item-cell">{{$record['rest']}}</td>
                 <td class="item-cell">{{$record['actualTime']}}</td>
                 <td class="item-cell">
-                    <a class="detail-link" href="/detail?date={{$record['date']}}&user_id={{$user->id}}">詳細</a>
+                    @if($record['attendance_id'])
+                        <a class="detail-link" href="/admin/attendance/{{$record['attendance_id']}}">詳細</a>
+                    @else
+                        <span class="">詳細</span>
+                    @endif
                 </td>
             </tr>
         @endforeach

@@ -124,6 +124,7 @@ class AttendanceService
             $actual_time = $this->calculateActualWorkTime($attendance_day);
 
             $records[] = [
+                'attendance_id' => $attendance_day ? $attendance_day->id : '',
                 'date' => $dateString,
                 'week' => $week,
                 'attendance' => $attendance_time ? $attendance_time->format('H:i') : '',
