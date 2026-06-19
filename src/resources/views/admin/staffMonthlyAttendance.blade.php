@@ -22,7 +22,7 @@
                 <span>先月</span>
             </a>
         </div>
-            <form action="/admin/attendance/list" method="GET">
+            <form action="/admin/attendance/staff/{{$user->id}}" method="GET">
                 <label class="calender-label" for="date-input">
                     <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
                     <span class="date-text">{{\Carbon\Carbon::parse($targetMonth)->format('Y/n')}}</span>
