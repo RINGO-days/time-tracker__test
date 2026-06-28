@@ -63,29 +63,20 @@ class AttendanceApiController extends Controller
      */
     public function show(Request $request,$id)
     {
-        $query = Attendance::query();
-
-        if($request->query('user_id')){
-            $query->where('user_id',$request->query('user_id'));
-        }
-        if($request->query('date')){
-            $query->whereDate('attendance_date',$request->query('date'));
-        }
-        if($request->query('month')){
-            $query->whereMonth('attendance_date',$request->query('month'));
-        }
-
-        $attendance = $query->find($id);
+        $attendance = Attendance::with([
+            'user',
+            'rests',
+            'proposals'
+        ])
+        ->find($id);
 
         if(!$attendance){
             return response()->json([
-                'message' => '出勤記録がありませんでした。',
-                'error' => 'ATTENDANCE_NOT_FOUND'
+                'error' => '勤怠情報が見つかりませんでした。'
             ],404);
         }
-        return response()->json([
-            'data' => $attendance
-        ]);
+
+        return response()->json($attendance);
     }
 
     /**
