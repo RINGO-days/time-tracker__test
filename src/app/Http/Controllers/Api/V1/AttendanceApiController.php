@@ -5,9 +5,15 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use Illuminate\Validation\Rule;
+use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
 
 class AttendanceApiController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum')->expect(['index','show']);
+    // }
     /**
      * Display a listing of the resource.
      *
@@ -50,9 +56,17 @@ class AttendanceApiController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAttendanceRecordRequest $request)
     {
-        //
+        $attendance = Attendance::create([
+            'user_id' => $request->user()->id,
+            'attendance_date' => $request->input('date'),
+            'attendance_time' => $request->input('clock_in'),
+            'leave_time' => $request->input('clock_out'),
+            'comment' => $request->input('comment')
+        ]);
+
+        return response()->json($attendance,201);
     }
 
     /**
@@ -61,7 +75,7 @@ class AttendanceApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$id)
+    public function show(Request $request,$attendanceRecord)
     {
         $attendance = Attendance::with([
             'user',
