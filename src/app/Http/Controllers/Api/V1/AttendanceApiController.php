@@ -6,20 +6,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\Api\V1\IndexAttendanceRecordRequest;
 use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
 
 class AttendanceApiController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:sanctum')->expect(['index','show']);
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->expect(['index','show']);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(IndexAttendanceRecordRequest $request)
     {
         $perPage = $request->query('per_page',20);
         if($perPage > 100){
@@ -27,18 +28,28 @@ class AttendanceApiController extends Controller
         }
 
         $query = Attendance::query();
-        if($request->query('user_id')){
-            $query->where('user_id',$request->query('user_id'));
-        }
 
-        if($request->query('date')){
-            $query->whereDate('attendance_date',$request->query('date'));
-        }
+        $query->when($request->query('user_id'),fn($query,$value) => $query->where('user_id',$value));
+        
+        $query->when($request->query('date'),fn($query,$value) => $query->whereDate('attendance_date',$value));
 
-        if($request->query('month')){
-            $query->whereMonth('attendance_date',$request->query('month'));
-        }
-        $attendances = $query->paginate($perPage);
+        $query->when($request->query('month'),function($query,$value){
+            $parts = explode('-',$value);
+            if(count($parts) === 2){
+                $year = $parts[0];
+                $month = $parts[1];
+
+                $query->whereYear('attendance_date',$year)
+                        ->whereMonth('attendance_date',$month);
+            }
+        });
+
+        $attendances = $query->with([
+            'user',
+            'proposals'
+        ])
+        ->paginate($perPage);
+
         if($attendances->isEmpty()){
             return response()->json([
                 'message' => '出勤記録がありませんでした。',
