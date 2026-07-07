@@ -5,16 +5,20 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\Api\V1\IndexAttendanceRecordRequest;
 use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
+use App\Http\Requests\Api\V1\UpdateAttendanceRecordRequest;
+use App\Http\Resources\AttendanceRecordResource;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use App\Policies\AttendanceRecordPolicy;
+
 
 class AttendanceApiController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum')->expect(['index','show']);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -23,14 +27,11 @@ class AttendanceApiController extends Controller
     public function index(IndexAttendanceRecordRequest $request)
     {
         $perPage = $request->query('per_page',20);
-        if($perPage > 100){
-            $perPage = 100;
-        }
 
         $query = Attendance::query();
 
         $query->when($request->query('user_id'),fn($query,$value) => $query->where('user_id',$value));
-        
+
         $query->when($request->query('date'),fn($query,$value) => $query->whereDate('attendance_date',$value));
 
         $query->when($request->query('month'),function($query,$value){
@@ -44,21 +45,17 @@ class AttendanceApiController extends Controller
             }
         });
 
-        $attendances = $query->with([
-            'user',
-            'proposals'
-        ])
-        ->paginate($perPage);
+        $attendancesRecord_records = $query->with(['user','rests'])
+                        ->latest('attendance_date')
+                        ->paginate($perPage);
 
-        if($attendances->isEmpty()){
+        if($attendancesRecord_records->isEmpty()){
             return response()->json([
                 'message' => '出勤記録がありませんでした。',
-                'error' => 'RECORDS_NOT_FOUND'
             ],404);
         }
-        return response()->json([
-            'data' => $attendances
-        ]);
+
+        return AttendanceRecordResource::collection($attendancesRecord_records);
     }
 
     /**
@@ -69,15 +66,22 @@ class AttendanceApiController extends Controller
      */
     public function store(StoreAttendanceRecordRequest $request)
     {
-        $attendance = Attendance::create([
-            'user_id' => $request->user()->id,
-            'attendance_date' => $request->input('date'),
-            'attendance_time' => $request->input('clock_in'),
-            'leave_time' => $request->input('clock_out'),
-            'comment' => $request->input('comment')
+        $validated = $request->validated();
+
+        $attendanceRecord = $request->user()->attendances()->create([
+            'attendance_date' => $validated['date'],
+            'attendance_time' => $validated['clock_in'],
+            'leave_time' => $validated['clock_out'] ?? null,
+            // 'comment' => $validated['comment'] ?? null
         ]);
 
-        return response()->json($attendance,201);
+        $attendanceRecord->load([
+            'user',
+            'rests'
+        ]);
+        return (new AttendanceRecordResource($attendanceRecord))
+                ->response()
+                ->setStatuscode(201);
     }
 
     /**
@@ -86,22 +90,21 @@ class AttendanceApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,$attendanceRecord)
+    public function show(Request $request,Attendance $attendanceRecord)
     {
-        $attendance = Attendance::with([
+        $attendanceRecord->load([
             'user',
             'rests',
             'proposals'
-        ])
-        ->find($id);
+        ]);
 
-        if(!$attendance){
+        if(!$attendanceRecord){
             return response()->json([
                 'error' => '勤怠情報が見つかりませんでした。'
             ],404);
         }
 
-        return response()->json($attendance);
+        return new AttendanceRecordResource($attendanceRecord);
     }
 
     /**
@@ -111,9 +114,26 @@ class AttendanceApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAttendanceRecordRequest $request,Attendance $attendanceRecord)
     {
-        //
+        // 勤怠記録のモデル名がAttendanceのため、直接AttendanceRecordPolicyをGate::policyで指定
+        Gate::policy(Attendance::class, AttendanceRecordPolicy::class);
+
+        $this->authorize('update',$attendanceRecord);
+
+        $validated = $request->validated();
+        $attendanceRecord->update([
+            'attendance_date' => $validated['date'],
+            'attendance_time' => $validated['clock_in'],
+            'leave_time' => $validated['clock_out'],
+            'comment' => $validated['comment']
+        ]);
+
+        $attendanceRecord->load([
+            'user',
+            'rests'
+        ]);
+        return new AttendanceRecordResource($attendanceRecord);
     }
 
     /**
@@ -122,8 +142,14 @@ class AttendanceApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Attendance $attendanceRecord)
     {
-        //
+        // 勤怠記録のモデル名がAttendanceのため、直接AttendanceRecordPolicyをGate::policyで指定
+        Gate::policy(Attendance::class, AttendanceRecordPolicy::class);
+
+        $this->authorize('delete',$attendanceRecord);
+
+        $attendanceRecord->delete();
+        return response()->json(null, 204);
     }
 }
