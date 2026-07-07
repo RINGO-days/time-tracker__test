@@ -10,27 +10,20 @@ use App\Http\Requests\ProposalRequest;
 
 class AttendanceDetailController extends Controller
 {
-    public function detail(Request $request)
+    public function detail(Request $request,$id)
     {
-        $attendance = Attendance::with('user')
-                    ->where('user_id',auth()->id())
-                    ->where('attendance_date',$request->query('date'))
-                    ->first();
+        $attendance = Attendance::with('user','rests')
+                    ->find($id);
 
-        if(!$attendance){
-            return redirect("/list")->with('message','勤務記録がありませんでした。');
-        }
-
+        // すでに申請済みの場合に承認待ち画面へ遷移させる
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
                     ->where('attendance_id',$attendance->id)
                     ->first();
-
-        if($proposal && $proposal->status === 1){   
+        if($proposal && $proposal->status === 1){
             return view('staff.detailConfirm',compact('proposal'));
         }
 
-        
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
 
