@@ -10,6 +10,7 @@
     color: #696969;
     border-radius: 10px;
     padding: 5px 15px;
+    letter-spacing: 0.15em;
 }
 .date{
     font-size: 40px;
@@ -35,6 +36,7 @@
     padding: 5px 0;
     width: 220px;
     cursor: pointer;
+    letter-spacing: 0.15em;
 }
 .rest-button{
     background-color: #ffffff;
@@ -46,8 +48,10 @@
     padding: 5px 0;
     width: 220px;
     cursor: pointer;
+    letter-spacing: 0.15em;
 }
 .work-finish{
     font-size: 26px;
     font-weight: 700;
+    letter-spacing: 0.15em;
 }

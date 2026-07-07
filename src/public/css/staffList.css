@@ -1,8 +1,8 @@
 .title {
     width: 60%;
-    margin: 90px auto 40px auto;
+    margin: 90px auto;
     position: relative;
-    padding-left: 15px;
+    padding-left: 30px;
     font-size: 30px;
     font-weight: 700;
 }
@@ -21,6 +21,7 @@
     color: #737373;
     text-align: center;
     line-height: 2.5;
+    letter-spacing: 0.15em;
 }
 .header-row {
     background-color: #ffffff;

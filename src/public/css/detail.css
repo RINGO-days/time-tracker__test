@@ -1,12 +1,17 @@
 .title {
     width: 60%;
-    margin: 40px auto;
+    margin: 90px auto 40px auto;
     position: relative;
-    padding-left: 15px;
+    padding-left: 30px;
     font-size: 30px;
     font-weight: 700;
 }
-
+.title.confirm{
+    margin-bottom: 90px;
+}
+.title.approve{
+    margin-top: 40px;
+}
 .title::before {
     content: "";
     background-color: #000000;
@@ -20,11 +25,13 @@
     margin: 5px auto;
     line-height: 4;
     color: #737373;
+    letter-spacing: 0.15em;
 }
 .table-raw{
     display: flex;
     background-color: #ffffff;
     margin-bottom: 5px;
+    align-items: center;
 }
 .table-raw:first-child{
     border-radius: 5px 5px 0 0;
@@ -34,6 +41,8 @@
 }
 .header-item{
     width: 20%;
+    margin-left: 60px;
+    text-align: left;
 }
 .header-item:first-child{
     border-radius: 5px 0 0 0;
@@ -70,13 +79,27 @@
     padding: 15px;
     width: 30%;
     height: 30px;
+    letter-spacing: 0.15em;
+    transition: background-color 0.2s ease,border-color 0.2s ease;
+}
+.item-input:hover{
+    background-color: #e1e1e1;
+    border-color: #007bff;
 }
 .remarks-area{
     width: 90%;
     border: 1px #d9d9d9 solid;
     border-radius: 5px;
     resize: none;
-    margin-top: 7px;
+    padding: 3px 5px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    margin: 5px;
+}
+.remarks-area:hover{
+    background-color: #e1e1e1;
+    border-color: #007bff;
 }
 .fix-button__inner{
     width: 60%;
@@ -92,6 +115,19 @@
     cursor: pointer;
     border-radius: 3px;
     border: none;
+    transition: color 0.2s ease;
+    letter-spacing: 0.15em;
+}
+.fix-button:hover {
+    color: #cccccc;
+    background: linear-gradient(#333333, #000000);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.fix-button:active {
+    background: linear-gradient(#000000, #333333);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    opacity: 0.85;
 }
 .approve-icon__inner{
     width: 60%;
@@ -121,4 +157,5 @@
     color: red;
     font-weight: 800;
     font-size: 18px;
+    letter-spacing: 0.15em;
 }

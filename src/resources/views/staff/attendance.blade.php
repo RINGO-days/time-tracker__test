@@ -10,13 +10,13 @@
 
 @section('main')
     <div class="attendance-item__box">
-        <p class="status-icon">{{ $status }}</p>
+        <p class="status-icon">{{ $condition }}</p>
         <p class="date">{{now()->format('Y年n月j日')}}({{ $todayWeek }})</p>
         <p class="time">{{now()->format('H:i')}}</p>
         <form method="POST">
             @csrf
             <div class="attendance-button__inner">
-                @switch($status)
+                @switch($condition)
                     @case ('勤務外')
                         <button class="attendance-button" type="submit" formaction="/attendance">出勤</button>
                         @break

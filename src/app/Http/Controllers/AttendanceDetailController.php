@@ -12,20 +12,25 @@ class AttendanceDetailController extends Controller
 {
     public function detail(Request $request)
     {
-        if(auth()->user()->is_admin){
-            $attendance = Attendance::where('user_id',$request->query('user_id'))
-                        ->where('attendance_date',$request->query('date'))
-                        ->first();
-        }else{
-            $attendance = Attendance::where('user_id',auth()->id())
-                        ->where('attendance_date',$request->query('date'))
-                        ->first();
-        }
+        $attendance = Attendance::with('user')
+                    ->where('user_id',auth()->id())
+                    ->where('attendance_date',$request->query('date'))
+                    ->first();
 
         if(!$attendance){
             return redirect("/list")->with('message','勤務記録がありませんでした。');
         }
 
+        $proposal = Proposal::with('user','attendance')
+                    ->where('user_id',auth()->id())
+                    ->where('attendance_id',$attendance->id)
+                    ->first();
+
+        if($proposal && $proposal->status === 1){   
+            return view('staff.detailConfirm',compact('proposal'));
+        }
+
+        
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
 
@@ -36,7 +41,7 @@ class AttendanceDetailController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        return view('staff.detail',compact('details','rests'));
+        return view('common.detail',compact('details','rests'));
     }
 
     public function propose(ProposalRequest $request,$id)
@@ -89,7 +94,7 @@ class AttendanceDetailController extends Controller
                 }
             }
 
-            return redirect('dailyAttendance');
+            return redirect('/admin/attendance/list');
         }
 
         return view('staff.detailConfirm',compact('proposal'));

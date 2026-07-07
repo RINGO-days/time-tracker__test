@@ -18,9 +18,11 @@ Route::middleware('auth','verified')->group(function(){
     Route::get('/attendance/report',[AttendanceController::class,'report']);
 
     Route::prefix('admin')->group(function(){
-        Route::get('/dailyAttendance',[AdminController::class,'dailyAttendance']);
+        Route::get('/attendance/list',[AdminController::class,'dailyAttendance']);
+        Route::get('/attendance/{id}',[AdminController::class,'editDetail']);
         Route::get('/staff/list',[AdminController::class,'staffList']);
-        Route::get('/csvExport',[AdminController::class,'export']);
+        Route::get('/attendance/staff/{id}',[AdminController::class,'staffMonthlyAttendance']);
+        Route::get('/csvExport/{id}',[AdminController::class,'export']);
         Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminController::class,'requestShow']);
         Route::post('/stamp_correction_request/approve/update/{attendance_correct_request_id}', [AdminController::class,'approve']);
     });

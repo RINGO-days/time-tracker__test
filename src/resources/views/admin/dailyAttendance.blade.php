@@ -9,20 +9,31 @@
 @endsection
 
 @section('main')
-    <h1 class="title">{{$targetDay->format('Y年m月d日')}}の勤怠</h1>
+    <h1 class="title">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
     <div class="pagenation__box">
-        <a class="page-link" href="?day={{$preDay}}"><span class="arrow">◀</span>前日</a>
-            <form action="" mothod="POST">
-                <label class="calender-label" for="">
-                    <input class="date-input" type="date" name="day" value="{{$targetDay}}" onchange="this.form.submit()">
-                    <span class="date-text">{{$targetDay->format('Y/m/d')}}</span>
+        <div class="link__box">
+            <a class="page-link" href="?day={{$preDay}}">
+                <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="先月へ">
+                <span>先日</span>
+            </a>
+        </div>
+            <form action="/admin/dailyAttendance" method="GET">
+                <label class="calender-label" for="date-input">
+                    <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
+                    <span class="date-text">{{\Carbon\Carbon::parse($targetDay)->format('Y/m/d')}}</span>
+                    <input class="date-input" id= "date-input" type="date" value="{{$targetDay}}" name="day" onchange="this.form.submit()">
                 </label>
             </form>
-        <a class="page-link" href="?day={{$nextDay}}">翌日<span class="arrow">▶</span></a>
+        <div class="link__box">
+            <a class="page-link" href="?day={{$nextDay}}">
+                <span>翌日</span>
+                <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月へ">
+            </a>
+        </div>    
     </div>
     <table class="list-table">
         <tr class="header-row">
-            <th class="header-item">名前</th>
+            <th class="header-item name">名前</th>
             <th class="header-item">出勤</th>
             <th class="header-item">退勤</th>
             <th class="header-item">休憩</th>
@@ -31,13 +42,13 @@
         </tr>
         @foreach($dailyAttendances as $dailyAttendance)
             <tr class="item-row">
-                <td>{{$dailyAttendance->user->name}}</td>
-                <td>{{$dailyAttendance->attendance_time->format('H:i')}}</td>
-                <td>{{$dailyAttendance->leave_time ? $dailyAttendance->leave_time->format(('H:i')) : ''}}</td>
-                <td>{{$dailyAttendance->rest_total}}</td>
-                <td>{{$dailyAttendance->actual_work_time}}</td>
-                <td>
-                    <a class="detail-link" href="/detail?date={{$targetDay->toDateString()}}&user_id={{$dailyAttendance->user->id}}">詳細</a>
+                <td class="item-cell name">{{$dailyAttendance->user->name}}</td>
+                <td class="item-cell">{{$dailyAttendance->attendance_time->format('H:i')}}</td>
+                <td class="item-cell">{{$dailyAttendance->leave_time ? $dailyAttendance->leave_time->format(('H:i')) : ''}}</td>
+                <td class="item-cell">{{$dailyAttendance->rest_total_str}}</td>
+                <td class="item-cell">{{$dailyAttendance->actual_work_time_str}}</td>
+                <td class="item-cell">
+                    <a class="detail-link" href="/admin/attendance/{{$dailyAttendance->user->id}}?date={{$targetDay->toDateString()}}">詳細</a>
                 </td>
             </tr>
         @endforeach

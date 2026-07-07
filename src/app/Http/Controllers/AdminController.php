@@ -14,50 +14,52 @@ use App\Services\AttendanceService;
 
 class AdminController extends Controller
 {
-    public function dailyAttendance(Request $request)
+    public function dailyAttendance(Request $request,AttendanceService $attendanceService)
     {
         $targetDay = Carbon::parse($request->get('day',Carbon::today()->toDateString()));
         $preDay = Carbon::parse($targetDay)->copy()->subDay()->format('Y/m/d');
         $nextDay = Carbon::parse($targetDay)->copy()->addDay()->format('Y/m/d');
 
-        // 指定した日の勤務記録を全件取得
         $dailyAttendances = Attendance::with(['user','rests'])
                             ->where('attendance_date',$targetDay)
                             ->get();
 
         foreach($dailyAttendances as $dailyAttendance){
-            // 休憩時間の合計の計算
-            $total_rest_seconds = 0;
             foreach($dailyAttendance->rests as $rest){
                 if($rest->rest_start && $rest->rest_end){
-                    $rest_start = Carbon::parse($rest->rest_start);
-                    $rest_end = Carbon::parse($rest->rest_end);
-                    $total_rest_seconds += $rest_start->diffInSeconds($rest_end);
+                    $dailyAttendance->rest_total_str = $attendanceService->calculateRestTime($dailyAttendance);
                 }
             };
-            $total_rest_minutes = floor($total_rest_seconds / 60);
-            $rest_minute = floor($total_rest_minutes % 60);
-            $rest_hour = floor($total_rest_minutes / 60);
-            $dailyAttendance->rest_total = sprintf('%02d:%02d',$rest_hour,$rest_minute);
 
-            // 労働時間から休憩時間を引いた実労働時間の計算
             if($dailyAttendance->attendance_time && $dailyAttendance->leave_time){
-                $work_start = Carbon::parse($dailyAttendance->attendance_time);
-                $work_end = Carbon::parse($dailyAttendance->leave_time);
-
-                $total_work_seconds = $work_start->diffInSeconds($work_end);
-                $total_work_minutes = floor($total_work_seconds / 60);
-
-
-                $actual_work_minutes = $total_work_minutes - $total_rest_minutes;
-                $actual_work_minute = floor($actual_work_minutes % 60);
-                $actual_work_hour = floor($actual_work_minutes / 60);
-
-                $dailyAttendance->actual_work_time = sprintf('%02d:%02d',$actual_work_hour,$actual_work_minute);
+                $dailyAttendance->actual_work_time_str = $attendanceService->calculateActualWorkTime($dailyAttendance);
             }
         }
 
         return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
+    }
+
+    public function editDetail(Request $request,$id)
+    {
+        $attendance = Attendance::with('user')
+                    ->find($id);
+
+        if(!$attendance){
+            return redirect('/admin/attendance/staff')->with('message','勤怠記録がありませんでした。');
+        }
+
+        $rests = Rest::where('attendance_id',$attendance->id)
+                    ->get();
+
+
+        $details = [
+            'id' => $attendance->id,
+            'name' => $attendance->user->name,
+            'date' => $attendance->attendance_date,
+            'attendance' => $attendance->attendance_time->format('H:i'),
+            'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
+        ];
+        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
     }
 
     public function staffList()
@@ -66,11 +68,21 @@ class AdminController extends Controller
         return view('admin.staffList',compact('users'),['nav' => 'admin']);
     }
 
+    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id)
+    {
+        extract($attendanceService->getMonthPeriod($request));
+        $records = $attendanceService->getMonthlyRecords($request);
+        $user = User::find($id);
+
+        return view('admin.staffMonthlyAttendance',compact('records','preMonth','nextMonth','targetMonth','user'),['nav' => 'admin']);
+    }
+
     public function export(Request $request,AttendanceService $attendanceService)
     {
         extract($attendanceService->getMonthPeriod($request));
+        $user = User::find($request->id);
 
-        $fileName = '勤怠＿' . $targetMonth . '.csv';
+        $fileName = $user->name . 'さんの勤怠＿' . $targetMonth . '.csv';
 
         $response = new StreamedResponse(function() use($startOfMonth,$endOfMonth,$attendanceService,$request){
             $stream = fopen('php://output','w');
@@ -80,15 +92,9 @@ class AdminController extends Controller
             $header = ['日付','出勤','退勤','休憩','合計'];
             fputcsv($stream,$header);
 
-            $attendances = Attendance::where('user_id',$request->query('user_id'))
-                        ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
-                        ->get();
+            $records = $attendanceService->getMonthlyRecords($request);
 
-
-                // $rest_time = $attendanceService->calculateRestTime($attendance);
-                // $actual_time = $attendanceService->calculateActualWorkTime($attendance);
-                $records = $attendanceService->getMonthlyRecords($request);
-                foreach($records as $row)
+            foreach($records as $row)
                 fputcsv($stream,[
                     $row['date']."[".$row['week']."]",
                     $row['attendance'],
@@ -96,7 +102,6 @@ class AdminController extends Controller
                     $row['rest'],
                     $row['actualTime'],
                 ]);
-            
 
             fclose($stream);
             });

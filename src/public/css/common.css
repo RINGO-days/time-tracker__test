@@ -1,5 +1,5 @@
 *{
-    font-family: 'Inter' sans-serif,
+    font-family: 'Inter', sans-serif;
 }
 main {
     background-color: #e1e1e1;
@@ -33,6 +33,7 @@ body {
     text-decoration: none;
     border: transparent 1px solid;
     padding: 5px 10px;
+    transition: border 0.2s ease;
 }
 .header__nav-item a:hover{
     border: #ffffff 1px solid;
@@ -46,12 +47,12 @@ body {
     font-size: 24px;
     font-weight: 700;
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 0px 10px;
+    transition: border 0.2s ease;
 }
 .logout-button:hover{
     border: #ffffff 1px solid;
     border-radius: 3px;
-    padding: 5px 10px;
 }
 .error-box{
     background-color: #fff5f5;

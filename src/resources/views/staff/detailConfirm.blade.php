@@ -9,12 +9,7 @@
 @endsection
 
 @section('main')
-    <div class="flash-message__box">
-        @if (session('success'))
-            <span class="flash-message">{{ session('success') }}</span>
-        @endif
-    </div>
-    <h1 class="title">勤怠詳細</h1>
+    <h1 class="title confirm">勤怠詳細</h1>
     <table class="detail-table">
             <tr class="table-raw">
                 <th class="header-item">名前</th>
@@ -28,7 +23,7 @@
                     <div class="item-input__box">
                         <span>{{date('Y年',strtotime($proposal->attendance->attendance_date))}}</span>
                         <span></span>
-                        <span>{{date('m月d日',strtotime($proposal->attendance->attendance_date))}}</span>
+                        <span>{{date('n月j日',strtotime($proposal->attendance->attendance_date))}}</span>
                     </div>
                 </td>
             </tr>
@@ -66,6 +61,6 @@
             </tr>
         </table>
         <div class="comment__inner">
-            <p class="comment">※申請中のため修正できません</p>
+            <p class="comment">*申請中のため修正できません</p>
         </div>
 @endsection
