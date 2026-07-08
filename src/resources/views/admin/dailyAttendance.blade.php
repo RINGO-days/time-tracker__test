@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <h1 class="title">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
     <div class="pagenation__box">
         <div class="link__box">
@@ -29,7 +34,7 @@
                 <span>翌日</span>
                 <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月へ">
             </a>
-        </div>    
+        </div>
     </div>
     <table class="list-table">
         <tr class="header-row">

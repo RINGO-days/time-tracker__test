@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <div class="attendance-item__box">
         <p class="status-icon">{{ $condition }}</p>
         <p class="date">{{now()->format('Y年n月j日')}}({{ $todayWeek }})</p>
