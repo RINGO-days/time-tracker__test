@@ -8,7 +8,6 @@ use App\Models\Attendance;
 
 class AttendanceService
 {
-    // 
     public function getMonthPeriod(Request $request) : array
     {
         $targetMonth = $request->get('month',Carbon::today()->format('Y-m'));
