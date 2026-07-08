@@ -6,7 +6,7 @@ use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\AdminController;
 
 Route::get('/admin/login',function(){
-    return view('admin.adminLogin');
+    return view('admin.adminLogin',['nav' => false]);
 });
 
 Route::middleware('auth','verified')->group(function(){

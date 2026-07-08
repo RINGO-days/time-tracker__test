@@ -43,7 +43,6 @@ class AdminController extends Controller
     {
         $attendance = Attendance::with('user')
                     ->find($id);
-
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
 
