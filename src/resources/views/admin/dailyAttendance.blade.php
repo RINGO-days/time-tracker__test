@@ -9,6 +9,11 @@
 @endsection
 
 @section('main')
+    <div class="flash-message__box">
+        @if (session('message'))
+            <span class="flash-message">{{ session('message') }}</span>
+        @endif
+    </div>
     <h1 class="title">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
     <div class="pagenation__box">
         <div class="link__box">
@@ -29,7 +34,7 @@
                 <span>翌日</span>
                 <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月へ">
             </a>
-        </div>    
+        </div>
     </div>
     <table class="list-table">
         <tr class="header-row">
@@ -48,7 +53,7 @@
                 <td class="item-cell">{{$dailyAttendance->rest_total_str}}</td>
                 <td class="item-cell">{{$dailyAttendance->actual_work_time_str}}</td>
                 <td class="item-cell">
-                    <a class="detail-link" href="/admin/attendance/{{$dailyAttendance->user->id}}?date={{$targetDay->toDateString()}}">詳細</a>
+                    <a class="detail-link" href="/admin/attendance/{{$dailyAttendance->id}}">詳細</a>
                 </td>
             </tr>
         @endforeach

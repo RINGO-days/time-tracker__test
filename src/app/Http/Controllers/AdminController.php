@@ -43,14 +43,8 @@ class AdminController extends Controller
     {
         $attendance = Attendance::with('user')
                     ->find($id);
-
-        if(!$attendance){
-            return redirect('/admin/attendance/staff')->with('message','勤怠記録がありませんでした。');
-        }
-
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
-
 
         $details = [
             'id' => $attendance->id,

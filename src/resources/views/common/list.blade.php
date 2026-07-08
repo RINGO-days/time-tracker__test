@@ -53,11 +53,7 @@
                 <td class="item-cell">{{$record['rest']}}</td>
                 <td class="item-cell">{{$record['actualTime']}}</td>
                 <td class="item-cell">
-                    @if(auth()->user()->is_admin)
-                        <a class="detail-link" href="/detail?date={{$record['date']}}&user_id={{$user->id}}">詳細</a>
-                    @else
-                        <a class="detail-link" href="/detail?date={{$record['date']}}">詳細</a>
-                    @endif
+                <a class="detail-link" href="/attendance/detail/{{$record['attendance_id']}}">詳細</a>
                 </td>
             </tr>
         @endforeach

@@ -59,13 +59,13 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(Loginresponse::class, new class implements LoginResponse{
             public function toResponse($request)
             {
-                if(! $request->user()->hasVerifiedEmail()){
-                    return redirect('/email/verify');
+                if(auth()->user()->is_admin && str_contains(url()->previous(),'admin/login')){
+                    return redirect('/admin/attendance/list');
+                }elseif(auth()->user()->is_admin && str_contains(url()->previous(),'login')){
+                    auth()->logout();
+                    return back()->with('message','一般スタッフ用のページにはログインできません。');
                 }
 
-                if(auth()->user()->is_admin && $request->query('page') === 'admin' ){
-                    return redirect('/admin/attendance/list');
-                }
                 return redirect('/');
             }
         });
@@ -73,8 +73,8 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(Logoutresponse::class, new class implements LogoutResponse{
             public function toResponse($request)
             {
-                if($request->query('page') === 'admin'){
-                    return redirect('/login?page=admin')->with('message','管理者ページからログアウトしました。');
+                if($request->query('role') === "admin"){
+                    return redirect('/admin/login')->with('message','管理者ページからログアウトしました');
                 }
                 return redirect('/login')->with('message','ログアウトしました。');
             }

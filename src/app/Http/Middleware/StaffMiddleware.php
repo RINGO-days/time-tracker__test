@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class AdminMiddleware
+class StaffMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,8 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!auth()->user()->is_admin){
-            return redirect('/')->with('message','管理者権限がありません');
+        if(auth()->user()->is_admin){
+            return redirect('/admin/attendance/list')->with('message','一般スタッフ用ページの閲覧権限はありません。');
         }
         return $next($request);
     }

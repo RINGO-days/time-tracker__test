@@ -10,27 +10,20 @@ use App\Http\Requests\ProposalRequest;
 
 class AttendanceDetailController extends Controller
 {
-    public function detail(Request $request)
+    public function detail(Request $request,$id)
     {
-        $attendance = Attendance::with('user')
-                    ->where('user_id',auth()->id())
-                    ->where('attendance_date',$request->query('date'))
-                    ->first();
+        $attendance = Attendance::with('user','rests')
+                    ->find($id);
 
-        if(!$attendance){
-            return redirect("/list")->with('message','勤務記録がありませんでした。');
-        }
-
+        // すでに申請済みの場合に承認待ち画面へ遷移させる
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
                     ->where('attendance_id',$attendance->id)
                     ->first();
-
-        if($proposal && $proposal->status === 1){   
+        if($proposal && $proposal->status === 1){
             return view('staff.detailConfirm',compact('proposal'));
         }
 
-        
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
 
@@ -67,7 +60,7 @@ class AttendanceDetailController extends Controller
             'user_id' => auth()->id(),
             'attendance_id' => $id,
             'proposed_attendance' => $proposal_attendance,
-            'proposed_rest' => $proposal_rest,
+            'proposed_rest' => $proposal_rest ?? null,
             'remarks' => $request->remarks,
         ]);
 
@@ -78,22 +71,24 @@ class AttendanceDetailController extends Controller
                 'attendance_time' => $proposal_attendance['attendance_time'],
                 'leave_time' => $proposal_attendance['leave_time'],
             ]);
-            foreach($proposal_rest as $restData){
-                if(!empty($restData['rest_id'])){
-                    Rest::where('id',$restData['rest_id'])
-                        ->update([
+
+            if($proposal_rests){
+                foreach($proposal_rests as $restData){
+                    if(!empty($restData['rest_id'])){
+                        Rest::where('id',$restData['rest_id'])
+                            ->update([
+                                'rest_start' => $restData['rest_start'],
+                                'rest_end' => $restData['rest_end'],
+                            ]);
+                    }else{
+                        Rest::create([
+                            'attendance_id' => $attendance->id,
                             'rest_start' => $restData['rest_start'],
                             'rest_end' => $restData['rest_end'],
                         ]);
-                }else{
-                    Rest::create([
-                        'attendance_id' => $attendance->id,
-                        'rest_start' => $restData['rest_start'],
-                        'rest_end' => $restData['rest_end'],
-                    ]);
+                    }
                 }
             }
-
             return redirect('/admin/attendance/list');
         }
 
@@ -107,7 +102,7 @@ class AttendanceDetailController extends Controller
         if(!auth()->user()->is_admin){
             $query->where('user_id',auth()->id());
         }
-            
+
         if($request->query('tab') == 'approved'){
             $query->where('status',2);
         }else{
