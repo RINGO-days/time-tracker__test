@@ -102,7 +102,7 @@ class AttendanceController extends Controller
         $halfYearWorkTime = Attendance::where('user_id',auth()->id())
                             ->whereBetween('attendance_date',[now()->submonth(5)->startOfDay(),now()->endOfDay()])
                             ->get();
-        
+
         $totalMinutes = 0;
         $totalOverTimeMinutes = 0;
         $monthlyData = [];
