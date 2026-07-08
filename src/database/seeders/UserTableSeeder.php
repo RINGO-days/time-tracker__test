@@ -65,7 +65,7 @@ class UserTableSeeder extends Seeder
                     'clock_out' => '17:00:00'
                 ];
                 $timePatterns[] = [
-                    'clock_in' => '09:00:00',
+                    'clock_in' => '08:00:00',
                     'clock_out' => '21:00:00'
                 ];
                 shuffle($timePatterns);

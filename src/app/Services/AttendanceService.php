@@ -72,7 +72,7 @@ class AttendanceService
 
         $total_actual_minutes = $total_work_minutes - $rest_minutes;
 
-        $total_actual_hour = floor($total_actual_minutes / 60); 
+        $total_actual_hour = floor($total_actual_minutes / 60);
         $total_actual_minute = floor($total_actual_minutes % 60);
 
         $total_actual_time = sprintf('%02d:%02d',$total_actual_hour,$total_actual_minute);

@@ -15,15 +15,15 @@
     <div class="item__box__inner">
         <div class="item__box">
             <p class="box-title">総労働時間</p>
-            <p class="box-content">{{floor($totalMinutes / 60)}}h {{$totalMinutes % 60}}m</p>
+            <p class="box-content">{{$totalWorkTime}}</p>
         </div>
         <div class="item__box">
             <p class="box-title">総残業時間</p>
-            <p class="box-content">{{floor($totalOverTimeMinutes / 60)}}h {{$totalOverTimeMinutes % 60}}m</p>
+            <p class="box-content">{{$totalOverTime}}</p>
         </div>
         <div class="item__box">
             <p class="box-title">平均労働時間/日</p>
-            <p class="box-content">{{floor(($totalMinutes/ $totalDays)/60)}}h {{($totalMinutes/$totalDays) %60}}m</p>
+            <p class="box-content">{{$avgTime}}</p>
         </div>
     </div>
     <h2 class="sub-title">月次推移（過去６ヶ月）</h2>
@@ -37,8 +37,8 @@
             @foreach($monthlyData as $month => $days)
                 <tr class="item-row">
                     <td class="item-cell">{{$month}}</td>
-                    <td class="item-cell">{{floor($monthlyTotalMinutes[$month]/60)}}h {{$monthlyTotalMinutes[$month]%60}}m</td>
-                    <td class="item-cell">{{floor($monthlyTotalOverMinutes[$month]/60)}}h {{$monthlyTotalOverMinutes[$month]%60}}m</td>
+                    <td class="item-cell">{{$monthlyTotalWorkTime[$month]}}</td>
+                    <td class="item-cell">{{$monthlyTotalOverTime[$month]}}</td>
                 </tr>
             @endforeach
         </table>
