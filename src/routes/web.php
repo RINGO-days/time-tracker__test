@@ -10,13 +10,14 @@ Route::get('/admin/login',function(){
 });
 
 Route::middleware('auth','verified')->group(function(){
+    Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
+
     Route::middleware('staff')->group(function(){
         Route::get('/',[AttendanceController::class,'index']);
         Route::get('/list',[AttendanceController::class,'list']);
         Route::post('/attendance',[AttendanceController::class,'attendance']);
         Route::post('/rest', [AttendanceController::class, 'rest']);
         Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'detail']);
-        Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
         Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
         Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('viewGuard');
         Route::get('/stamp_correction_request', [AttendanceDetailController::class, '']);

@@ -60,7 +60,7 @@ class AttendanceDetailController extends Controller
             'user_id' => auth()->id(),
             'attendance_id' => $id,
             'proposed_attendance' => $proposal_attendance,
-            'proposed_rest' => $proposal_rest,
+            'proposed_rest' => $proposal_rest ?? null,
             'remarks' => $request->remarks,
         ]);
 
@@ -71,22 +71,24 @@ class AttendanceDetailController extends Controller
                 'attendance_time' => $proposal_attendance['attendance_time'],
                 'leave_time' => $proposal_attendance['leave_time'],
             ]);
-            foreach($proposal_rest as $restData){
-                if(!empty($restData['rest_id'])){
-                    Rest::where('id',$restData['rest_id'])
-                        ->update([
+
+            if($proposal_rests){
+                foreach($proposal_rests as $restData){
+                    if(!empty($restData['rest_id'])){
+                        Rest::where('id',$restData['rest_id'])
+                            ->update([
+                                'rest_start' => $restData['rest_start'],
+                                'rest_end' => $restData['rest_end'],
+                            ]);
+                    }else{
+                        Rest::create([
+                            'attendance_id' => $attendance->id,
                             'rest_start' => $restData['rest_start'],
                             'rest_end' => $restData['rest_end'],
                         ]);
-                }else{
-                    Rest::create([
-                        'attendance_id' => $attendance->id,
-                        'rest_start' => $restData['rest_start'],
-                        'rest_end' => $restData['rest_end'],
-                    ]);
+                    }
                 }
             }
-
             return redirect('/admin/attendance/list');
         }
 
@@ -100,7 +102,7 @@ class AttendanceDetailController extends Controller
         if(!auth()->user()->is_admin){
             $query->where('user_id',auth()->id());
         }
-            
+
         if($request->query('tab') == 'approved'){
             $query->where('status',2);
         }else{
