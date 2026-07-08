@@ -82,6 +82,7 @@ class UserTableSeeder extends Seeder
                     'attendance_date' => $workDay,
                     'attendance_time' => $clockIn,
                     'leave_time' => $clockOut,
+                    'status' => 3,
                 ]);
                 DB::table('rests')->insert([
                     'attendance_id' => $attendanceId,
