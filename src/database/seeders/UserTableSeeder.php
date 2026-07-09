@@ -65,7 +65,7 @@ class UserTableSeeder extends Seeder
                     'clock_out' => '17:00:00'
                 ];
                 $timePatterns[] = [
-                    'clock_in' => '09:00:00',
+                    'clock_in' => '08:00:00',
                     'clock_out' => '21:00:00'
                 ];
                 shuffle($timePatterns);
@@ -82,6 +82,7 @@ class UserTableSeeder extends Seeder
                     'attendance_date' => $workDay,
                     'attendance_time' => $clockIn,
                     'leave_time' => $clockOut,
+                    'status' => 3,
                 ]);
                 DB::table('rests')->insert([
                     'attendance_id' => $attendanceId,
