@@ -47,7 +47,7 @@ class ProposalRequest extends FormRequest
 
             'leave.required' => '退勤時間を入力してください。',
             'leave.date_format' => '時:分の形式で入力してください。',
-            'leave.after' => '出勤時間もしくは退勤時間が不適切な値です',
+            'leave.after' => '出勤時間もしくは退勤時間が不適切な値です。',
 
             'remarks.required' => '備考を記入してください。',
             'remarks.max' => '備考は225文字以内で入力してください。',

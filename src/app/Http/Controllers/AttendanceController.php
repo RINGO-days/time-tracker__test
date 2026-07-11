@@ -169,8 +169,12 @@ class AttendanceController extends Controller
         // 総残業時間の計算
         $totalOverTime = floor($totalOverTimeMinutes / 60) . 'h ' . $totalOverTimeMinutes % 60 . 'm';
         // 平均労働時間/日の計算
-        $avgTotalMinute = $totalMinutes / $halfYearWorkTime->count();
-        $avgTime = floor($avgTotalMinute / 60).'h '. floor($avgTotalMinute) % 60 . 'm';
+        if($halfYearWorkTime->isEmpty()){
+            $avgTime = '0h 0m';
+        }else{
+            $avgTotalMinute = $totalMinutes / $halfYearWorkTime->count();
+            $avgTime = floor($avgTotalMinute / 60).'h '. floor($avgTotalMinute) % 60 . 'm';
+        }
 
         // 月毎の労働時間の計算
         $monthlyTotalWorkTime = collect($monthlyTotalMinutes)->map(function($totalMinutes){

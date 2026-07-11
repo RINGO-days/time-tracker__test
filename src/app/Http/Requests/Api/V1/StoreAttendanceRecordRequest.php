@@ -50,7 +50,8 @@ class StoreAttendanceRecordRequest extends FormRequest
             'clock_in.required' => '出勤時刻は必須です。',
             'clock_in.date_format' => '出勤時刻はHH:MM:SS形式で指定してください。',
             'clock_out.date_format' => '退勤時刻はHH:MM:SS形式で入力してください。',
-            'clock_out.after' => '退勤時刻は出勤時刻より後の時刻を指定してください。'
+            'clock_out.after' => '退勤時刻は出勤時刻より後の時刻を指定してください。',
+            'comment.max' => 'コメントの最大文字数は255文字です。'
         ];
     }
 }

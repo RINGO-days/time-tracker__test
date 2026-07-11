@@ -72,7 +72,7 @@ class AttendanceApiController extends Controller
             'attendance_date' => $validated['date'],
             'attendance_time' => $validated['clock_in'],
             'leave_time' => $validated['clock_out'] ?? null,
-            // 'comment' => $validated['comment'] ?? null
+            'comment' => $validated['comment'] ?? null
         ]);
 
         $attendanceRecord->load([
@@ -125,8 +125,8 @@ class AttendanceApiController extends Controller
         $attendanceRecord->update([
             'attendance_date' => $validated['date'],
             'attendance_time' => $validated['clock_in'],
-            'leave_time' => $validated['clock_out'],
-            'comment' => $validated['comment']
+            'leave_time' => $validated['clock_out'] ?? null,
+            'comment' => $validated['comment'] ?? null
         ]);
 
         $attendanceRecord->load([
