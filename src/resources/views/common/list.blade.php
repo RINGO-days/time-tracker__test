@@ -25,7 +25,7 @@
             <form action="/list" method="GET">
                 <label class="calender-label" for="date-input">
                     <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
-                    <span class="date-text">{{\Carbon\Carbon::parse($targetMonth)->format('Y/n')}}</span>
+                    <span class="date-text">{{\Carbon\Carbon::parse($targetMonth)->format('Y/m')}}</span>
                     <input class="date-input" id= "date-input" type="month" value="{{$targetMonth}}" name="month" onchange="this.form.submit()">
                 </label>
             </form>

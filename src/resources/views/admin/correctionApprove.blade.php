@@ -69,11 +69,11 @@
         </table>
         @if($proposal->status === 1)
             <div class="fix-button__inner">
-                <button class="fix-button" type="submit">承諾</button>
+                <button class="fix-button" type="submit">承認</button>
             </div>
         @else
             <div class="approve-icon__inner">
-                <span class="approve-icon">承諾済み</span>
+                <span class="approve-icon">承認済み</span>
             </div>
         @endif
     </form>

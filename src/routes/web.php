@@ -11,6 +11,7 @@ Route::get('/admin/login',function(){
 
 Route::middleware('auth','verified')->group(function(){
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
+    Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('viewGuard');
 
     Route::middleware('staff')->group(function(){
         Route::get('/',[AttendanceController::class,'index']);
@@ -19,8 +20,6 @@ Route::middleware('auth','verified')->group(function(){
         Route::post('/rest', [AttendanceController::class, 'rest']);
         Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'detail']);
         Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
-        Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('viewGuard');
-        Route::get('/stamp_correction_request', [AttendanceDetailController::class, '']);
         Route::get('/attendance/report',[AttendanceController::class,'report']);
     });
 

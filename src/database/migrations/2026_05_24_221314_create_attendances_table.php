@@ -20,6 +20,7 @@ class CreateAttendancesTable extends Migration
             $table->tinyInteger('status')->default(1);
             $table->time('attendance_time');
             $table->time('leave_time')->nullable();
+            $table->text('comment')->nullable();
             $table->timestamps();
         });
     }
