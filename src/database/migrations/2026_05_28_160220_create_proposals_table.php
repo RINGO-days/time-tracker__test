@@ -19,7 +19,7 @@ class CreateProposalsTable extends Migration
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
             $table->json('proposed_attendance')->nullable();
             $table->json('proposed_rest')->nullable();
-            $table->text('remarks')->nullable();
+            $table->text('remarks');
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

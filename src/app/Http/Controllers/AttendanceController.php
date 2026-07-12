@@ -94,7 +94,7 @@ class AttendanceController extends Controller
 
         $records = $attendanceService->getMonthlyRecords($request);
 
-        return view('common.list',compact('records','preMonth','nextMonth','targetMonth'));
+        return view('staff.list',compact('records','preMonth','nextMonth','targetMonth'));
     }
 
     public function report(AttendanceService $attendanceService)
