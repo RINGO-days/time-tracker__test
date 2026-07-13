@@ -145,7 +145,6 @@ class attendanceDetailProposeTest extends TestCase
         $rest = Rest::factory()->create([
             'attendance_id' => $attendance->id,
         ]);
-
         $formData = [
             'attendance' => '09:00',
             'leave' => '18:00',
@@ -155,9 +154,9 @@ class attendanceDetailProposeTest extends TestCase
                     'rest_end' => '13:00'
                 ]
             ],
-            'remarks' => 'テスト'
+            'remarks' => 'テスト',
+            'date' => $attendance->attendance_date
         ];
-
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
         $response->assertStatus(200);
 
@@ -197,7 +196,9 @@ class attendanceDetailProposeTest extends TestCase
                     'rest_end' => '13:00'
                 ]
             ],
-            'remarks' => 'テスト'
+            'remarks' => 'テスト',
+            'date' => $attendance->attendance_date
+
         ];
 
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
@@ -234,7 +235,8 @@ class attendanceDetailProposeTest extends TestCase
                     'rest_end' => '13:30'
                 ]
             ],
-            'remarks' => 'テスト'
+            'remarks' => 'テスト',
+            'date' => $attendance->attendance_date
         ];
 
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
@@ -272,7 +274,8 @@ class attendanceDetailProposeTest extends TestCase
                     'rest_end' => '13:30'
                 ]
             ],
-            'remarks' => 'テスト記入'
+            'remarks' => 'テスト記入',
+            'date' => $attendance->attendance_date
         ];
 
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);

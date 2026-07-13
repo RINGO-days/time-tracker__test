@@ -15,7 +15,6 @@ class AttendanceDetailController extends Controller
         $attendance = Attendance::with('user','rests')
                     ->find($id);
 
-        // すでに申請済みの場合に承認待ち画面へ遷移させる
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
                     ->where('attendance_id',$attendance->id)
