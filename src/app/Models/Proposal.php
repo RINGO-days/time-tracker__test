@@ -12,6 +12,7 @@ class Proposal extends Model
     protected $fillable = [
         'user_id',
         'attendance_id',
+        'target_date',
         'proposed_attendance',
         'proposed_rest',
         'remarks',

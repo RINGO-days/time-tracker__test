@@ -21,9 +21,9 @@
                 <th class="header-item">日付</th>
                 <td class="table-item">
                     <div class="item-input__box">
-                        <span>{{date('Y年',strtotime($proposal->attendance->attendance_date))}}</span>
+                        <span>{{date('Y年',strtotime($proposal->target_date))}}</span>
                         <span></span>
-                        <span>{{date('n月j日',strtotime($proposal->attendance->attendance_date))}}</span>
+                        <span>{{date('n月j日',strtotime($proposal->target_date))}}</span>
                     </div>
                 </td>
             </tr>
@@ -37,7 +37,7 @@
                     </div>
                 </td>
             </tr>
-            @foreach($proposal->proposed_rest as $rest)
+            @foreach($proposal->proposed_rest ?? [] as $rest)
                 <tr class="table-raw">
                     @if(!$loop->first)
                         <th class="header-item">休憩{{$loop->iteration}}</th>

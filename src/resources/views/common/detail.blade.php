@@ -10,7 +10,11 @@
 
 @section('main')
     <h1 class="title">勤怠詳細</h1>
-    <form action="/detail/propose/{{$details['id']}}" method="POST">
+    @if($details['id'] === 'new_id')
+        <form action="/newDetail/propose" method="POST">
+    @else
+        <form action="/detail/propose/{{$details['id']}}" method="POST">
+    @endif
         @csrf
         <table class="detail-table">
             <tr class="table-raw">
@@ -35,13 +39,13 @@
                         <input
                             class="item-input"
                             type="text" name="attendance"
-                            value="{{old("attendance",$details['attendance'])}}"
+                            value="{{old("attendance",$details['attendance'] ?? null)}}"
                         >
                         <span>〜</span>
                         <input
                             class="item-input"
                             type="text" name="leave"
-                            value="{{old("leave",$details['leave'])}}"
+                            value="{{old("leave",$details['leave'] ?? null)}}"
                         >
                     </div>
                     @error('attendance')
@@ -68,7 +72,7 @@
                             <input
                                 class="item-input"
                                 type="text" name="rest[{{$rest->id}}][rest_start]"
-                                value="{{old("rest.{$rest->id}.rest_start", $rest->rest_start->format('H:i'))}}"
+                                value="{{old("rest.{$rest->id}.rest_start", $rest->rest_start?->format('H:i'))}}"
                             >
                             <span>〜</span>
                             <input
@@ -92,7 +96,7 @@
                 </tr>
             @endforeach
             <tr class="table-raw">
-                <th class="header-item">休憩{{$rests->count() +1}}</th>
+                <th class="header-item">休憩{{$rests ? $rests->count() +1 : 1}}</th>
                 <td class="table-item">
                     <div class="item-input__box">
                         <input
@@ -141,5 +145,6 @@
         <div class="fix-button__inner">
             <button class="fix-button" type="submit">修正</button>
         </div>
+        <input type="hedden" name="date" value="{{$details['date']}}">
     </form>
 @endsection

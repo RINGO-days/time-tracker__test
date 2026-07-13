@@ -11,6 +11,8 @@ Route::get('/admin/login',function(){
 
 Route::middleware('auth','verified')->group(function(){
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
+    Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']);
+    Route::post('/newDetail/propose', [AttendanceDetailController::class, 'newDetailPropose']);
     Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('viewGuard');
 
     Route::middleware('staff')->group(function(){

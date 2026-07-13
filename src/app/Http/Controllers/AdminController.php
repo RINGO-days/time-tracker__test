@@ -45,7 +45,6 @@ class AdminController extends Controller
                     ->find($id);
         $rests = Rest::where('attendance_id',$attendance->id)
                     ->get();
-
         $details = [
             'id' => $attendance->id,
             'name' => $attendance->user->name,
@@ -113,14 +112,25 @@ class AdminController extends Controller
 
     public function approve(Request $request,$attendance_correct_request_id)
     {
-        $proposal = Proposal::find($attendance_correct_request_id);
+        $proposal = Proposal::with('user')
+                    ->find($attendance_correct_request_id);
 
-        $proposal->attendance->update([
-            'attendance_time' => $proposal->proposed_attendance['attendance_time'],
-            'leave_time' => $proposal->proposed_attendance['leave_time'],
-        ]);
+        if($proposal->attendance_id){
+            $attendance = $proposal->attendance;
+            $attendance->update([
+                'attendance_time' => $proposal->proposed_attendance['attendance_time'] ?? null,
+                'leave_time' => $proposal->proposed_attendance['leave_time'] ?? null,
+            ]);
+        }else{
+            $attendance = Attendance::create([
+                'user_id' => $proposal->user_id,
+                'attendance_date' => $proposal->target_date,
+                'attendance_time' => $proposal->proposed_attendance['attendance_time'],
+                'leave_time' => $proposal->proposed_attendance['leave_time'] ?? null,
+            ]);
+        }
 
-        foreach($proposal->proposed_rest as $proposalRest){
+        foreach($proposal->proposed_rest ?? [] as $proposalRest){
             if(!empty($proposalRest['rest_id'])){
                 Rest::where('id',$proposalRest['rest_id'])
                     ->update([
@@ -129,14 +139,15 @@ class AdminController extends Controller
                     ]);
             }else{
                 Rest::create([
-                    'attendance_id' => $proposal->attendance->id,
+                    'attendance_id' => $attendance->id,
                     'rest_start' => $proposalRest['rest_start'],
                     'rest_end' => $proposalRest['rest_end'],
                 ]);
             }
         }
         $proposal->update([
-            'status' => 2
+            'status' => 2,
+            'attendance_id' => $attendance->id
         ]);
 
         return back();

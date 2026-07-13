@@ -53,7 +53,11 @@
                 <td class="item-cell">{{$record['rest']}}</td>
                 <td class="item-cell">{{$record['actualTime']}}</td>
                 <td class="item-cell">
-                <a class="detail-link" href="/attendance/detail/{{$record['attendance_id']}}">詳細</a>
+                @if($record['attendance_id'])
+                    <a class="detail-link" href="/attendance/detail/{{$record['attendance_id']}}">詳細</a>
+                @else
+                    <a class="detail-link" href="/attendance/newDetail?date={{$record['date']}}">詳細</a>
+                @endif
                 </td>
             </tr>
         @endforeach
