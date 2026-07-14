@@ -83,3 +83,15 @@ php artisan migrate:fresh --seed
 | ユーザー3（管理者） | `user3@example.com` | `password` | 管理者ユーザー |
 ## 📃ER図
 ![ER図](ER.png)
+## その他の追加機能
+- ### スタッフ用のミドルウェアと管理者用のミドルウェアの作成
+> スタッフは管理者用のページにアクセスしようとすると、アクセスできませんの旨のメッセージともに<a>http://localhost/attendance</a>にリダイレクトされる。管理者も同じように一般スタッフ用ページにアクセスしようとすると<a>http://localhost/admin/attendance/list</a>にリダイレクトされる
+> #### 作成したミドルウェア　（src/app/Http/Middleware/〜）
+> - AdminMiddleware
+> - StaffMiddleware
+---
+- ### 既存の勤怠データではなく、新規で勤怠データを作成するメソッドの作成
+> 月次勤怠リストに出勤日の時間の記載がない欄の詳細ボタンから、新規で勤怠を作成するできるようにメソッドを追加。
+> #### 作成したルート
+> - Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']);
+> - Route::post('/newDetail/propose', [AttendanceDetailController::class, 'newDetailPropose']);
