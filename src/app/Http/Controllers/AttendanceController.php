@@ -104,96 +104,63 @@ class AttendanceController extends Controller
                             ->whereBetween('attendance_date',[now()->submonth(5)->startOfMonth(),now()->endOfMonth()])
                             ->get();
 
-        $totalMinutes = 0;
-        $totalOverTimeMinutes = 0;
-        $monthlyData = [];
-        $lateCount = 0;
-        $leaveEarlyCount = 0;
-        $over10HourCount= 0;
+        $proceseedAttendance = $halfYearWorkTime->map(function($day) use ($attendanceService){
+            $total_time_str = $attendanceService->calculateActualWorkTime($day);
+            $dayMinutes = !empty($total_time_str) ? (Carbon::parse($total_time_str)->hour * 60) + Carbon::parse($total_time_str)->minute : 0;
 
-        for($i = 0; $i <= 5; $i ++){
-            $monthKey = now()->subMonths($i)->format('Y-m');
-            $monthlyData[$monthKey] = collect();
-        }
-        $monthlyLabel = $halfYearWorkTime->groupBy(function($monthly){
-            return Carbon::parse($monthly->attendance_date)->format('Y-m');
+            return [
+                'month' => Carbon::parse($day->attendance_date)->format('Y-m'),
+                'minutes' => $dayMinutes,
+                'over_minutes' => (!empty($day->leave_time) && $dayMinutes > 480) ? $dayMinutes - 480 : 0,
+                'is_over_10h' => !empty($day->leave_time) && $dayMinutes > 600,
+                'is_early' => !empty($day->leave_time) && Carbon::parse($day->leave_time)->isBefore(Carbon::parse($day->leave_time)->setTime(18,0,0)),
+                'is_late' => Carbon::parse($day->attendance_time)->isAfter(Carbon::parse($day->attendance_time)->setTime(9,0,0)),
+            ];
         });
-        foreach($monthlyLabel as $month => $days){
-            $monthlyData[$month] = $days;
-        }
 
-        foreach($monthlyData as $month => $days){
-            $monthlyTotalMinutes[$month] = 0;
-            $monthlyTotalOverMinutes[$month] = 0;
-            foreach($days as $dayWorkTime){
-                $totalTimeStr = $attendanceService->calculateActualWorkTime($dayWorkTime);
+        $over10hourCount = $proceseedAttendance->where('is_over_10h',true)->count();
+        $earlyCount = $proceseedAttendance->where('is_early',true)->count();
+        $lateCount = $proceseedAttendance->where('is_late',true)->count();
 
-                if(!empty($totalTimeStr)){
-                    $dayMinutes = (Carbon::parse($totalTimeStr)->hour * 60) + (Carbon::parse($totalTimeStr)->minute);
-                    $totalMinutes += $dayMinutes;
-                    $monthlyTotalMinutes[$month] += $dayMinutes;
+        $totalMinutes = $proceseedAttendance->sum('minutes');
+        $totalOverTimeMinutes = $proceseedAttendance->sum('over_minutes');
 
-                    if (!empty($dayWorkTime->leave_time)) {
-                        if($dayMinutes > 480){
-                            $dayOvertimeMinutes = $dayMinutes - 480;
-                            $totalOverTimeMinutes += $dayOvertimeMinutes;
-                            $monthlyTotalOverMinutes[$month] += $dayOvertimeMinutes;
-                        }
-
-                        // 長時間労働回数（10時間超）のカウント
-                        if($dayMinutes > 600){
-                            $over10HourCount ++;
-                        }
-                    }
-
-                    // 早退回数のカウント
-                    $work_end = Carbon::parse($dayWorkTime->leave_time);
-                    $overtime_line = Carbon::parse($dayWorkTime->leave_time)->setTime(18,0,0);
-                    if($work_end->lessThan($overtime_line)){
-                        $leaveEarlyCount ++;
-                    }
-
-                }
-                // 遅刻回数のカウント
-                if(!empty($dayWorkTime->attendance_time)){
-                    $lateness_line = Carbon::parse($dayWorkTime->attendance_time)->setTime(9,0,0);
-                    $work_start = Carbon::parse($dayWorkTime->attendance_time);
-                    if($work_start->greaterThan($lateness_line)){
-                        $lateCount ++;
-                    }
-                }
-            }
-        }
-        // 総労働時間の計算
-        $totalWorkTime = floor($totalMinutes / 60) . 'h ' . $totalMinutes % 60 . 'm';
-        // 総残業時間の計算
-        $totalOverTime = floor($totalOverTimeMinutes / 60) . 'h ' . $totalOverTimeMinutes % 60 . 'm';
-        // 平均労働時間/日の計算
+        $formattedTotalWorkTime = ($totalMinutes / 60) . 'h ' . $totalMinutes % 60 . 'm';
+        $formattedTotalOverTime = ($totalOverTimeMinutes / 60) . 'h ' . $totalOverTimeMinutes % 60 . 'm';
         if($halfYearWorkTime->isEmpty()){
-            $avgTime = '0h 0m';
+            $formattedAvgTime = '0h 0m';
         }else{
             $avgTotalMinute = $totalMinutes / $halfYearWorkTime->count();
-            $avgTime = floor($avgTotalMinute / 60).'h '. floor($avgTotalMinute) % 60 . 'm';
+            $formattedAvgTime = floor($avgTotalMinute / 60).'h '. floor($avgTotalMinute) % 60 . 'm';
         }
 
-        // 月毎の労働時間の計算
-        $monthlyTotalWorkTime = collect($monthlyTotalMinutes)->map(function($totalMinutes){
-            return floor($totalMinutes / 60) . 'h ' . $totalMinutes % 60 . 'm';
+        // キー名が20xx-xxのような６ヶ月分の空の連想配列を用意
+        $monthlyData = collect(range(0,5))->mapWithKeys(function($i){
+            return [now()->subMonths($i)->format('Y-m') => collect()];
         });
-        // 月毎の残業時間の計算
-        $monthlyTotalOverTime = collect($monthlyTotalOverMinutes)->map(function($totalOverMinutes){
-            return floor($totalOverMinutes / 60) . 'h ' . $totalOverMinutes % 60 . 'm';
+
+        $groupedMonths = $proceseedAttendance->groupBy('month');
+
+        $monthlyTotalWorkTime = $monthlyData->map(function($value,$month) use($groupedMonths){
+            $minutes = $groupedMonths->get($month)?->sum('minutes');
+            return floor($minutes / 60) . 'h ' . floor($minutes % 60) . 'm';
         });
+
+        $monthlyTotalOverTime = $monthlyData->map(function($value,$month) use($groupedMonths){
+            $overMinutes = $groupedMonths->get($month)->sum('over_minutes');
+            return floor($overMinutes / 60) . 'h ' . floor($overMinutes % 60) . 'm';
+        });
+
         return view('staff.attendanceReport',compact(
-            'totalWorkTime',
-            'totalOverTime',
-            'avgTime',
+            'formattedTotalWorkTime',
+            'formattedTotalOverTime',
+            'formattedAvgTime',
             'monthlyData',
             'monthlyTotalWorkTime',
             'monthlyTotalOverTime',
-            'lateCount',
-            'leaveEarlyCount',
-            'over10HourCount',
+            'over10hourCount',
+            'earlyCount',
+            'lateCount'
         ));
     }
 }

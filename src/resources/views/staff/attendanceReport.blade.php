@@ -15,15 +15,15 @@
     <div class="item__box__inner">
         <div class="item__box">
             <p class="box-title">総労働時間</p>
-            <p class="box-content">{{$totalWorkTime}}</p>
+            <p class="box-content">{{$formattedTotalWorkTime}}</p>
         </div>
         <div class="item__box">
             <p class="box-title">総残業時間</p>
-            <p class="box-content">{{$totalOverTime}}</p>
+            <p class="box-content">{{$formattedTotalOverTime}}</p>
         </div>
         <div class="item__box">
             <p class="box-title">平均労働時間/日</p>
-            <p class="box-content">{{$avgTime}}</p>
+            <p class="box-content">{{$formattedAvgTime}}</p>
         </div>
     </div>
     <h2 class="sub-title">月次推移（過去６ヶ月）</h2>
@@ -52,11 +52,11 @@
         </div>
         <div class="item__box">
             <p class="box-title">早退回数</p>
-            <p class="box-content">{{$leaveEarlyCount}}回</p>
+            <p class="box-content">{{$earlyCount}}回</p>
         </div>
         <div class="item__box">
             <p class="box-title">長時間労働日数</p>
-            <p class="box-content">{{$over10HourCount}}日</p>
+            <p class="box-content">{{$over10hourCount}}日</p>
         </div>
     </div>
 @endsection
