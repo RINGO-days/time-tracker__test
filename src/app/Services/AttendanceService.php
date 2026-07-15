@@ -27,7 +27,7 @@ class AttendanceService
         ];
     }
 
-    public function calculateRestTime(?Attendance $attendanceDay) :string
+    public function calculateRestTime(?Attendance $attendanceDay) : string
     {
         if(!$attendanceDay){
             return '';
@@ -54,7 +54,7 @@ class AttendanceService
         return $rest_time;
     }
 
-    public function calculateActualWorkTime(?Attendance $attendanceDay) :string
+    public function calculateActualWorkTime(?Attendance $attendanceDay) : string
     {
         if(!$attendanceDay || !$attendanceDay->leave_time){
             return '';
@@ -80,7 +80,7 @@ class AttendanceService
         return $total_actual_time;
     }
 
-    public function getMonthlyRecords(Request $request) :array
+    public function getMonthlyRecords(Request $request) : array
     {
         extract($this->getMonthPeriod($request));
 

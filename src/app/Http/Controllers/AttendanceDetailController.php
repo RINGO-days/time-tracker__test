@@ -7,13 +7,27 @@ use App\Models\Attendance;
 use App\Models\Rest;
 use App\Models\Proposal;
 use App\Http\Requests\ProposalRequest;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+
 
 class AttendanceDetailController extends Controller
 {
-    public function detail(Request $request,$id)
+    /**
+     * 一般ユーザーまたは管理者が月次勤怠リストから出勤データある日付の詳細ボタンを押した時の詳細画面表示(一般ユーザーと管理者で共通のアクション)
+     * 詳細画面では選択した日付に登録されているユーザーの名前、選択した日付、入力フィールドに出勤時間、退勤時間、休憩前後の時間、修正理由を記載する備考欄を表示
+     * * 動的セグメントでURLから出勤のIDをfindする
+     * - if文を用いて、見つけた勤怠データから勤怠修正申請テーブル(proposalsテーブル)に紐付いたデータがあり、かつ申請ステータスが１(申請中)の場合、承認待ちの旨のコメントがある画面を表示する
+     * - 上記以外の場合は変更したい日付の勤怠データが表示されているフォーム画面を表示する
+     *
+     * @param int $id 勤怠ID
+     *
+     * @return View
+     */
+    public function detail($id) : View
     {
         $attendance = Attendance::with('user','rests')
-                    ->find($id);
+                    ->findOrFail($id);
 
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
@@ -30,12 +44,12 @@ class AttendanceDetailController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        $rests = Rest::where('attendance_id',$attendance->id)
-                    ->get();
+        $rests = $attendance->rests;
+
         return view('common.detail',compact('details','rests'));
     }
 
-    public function newDetail(Request $request)
+    public function newDetail(Request $request) : View
     {
         $details = [
             'id' => 'new_id',
@@ -46,7 +60,7 @@ class AttendanceDetailController extends Controller
         return view('common.detail',compact('details','rests'));
     }
 
-    public function propose(ProposalRequest $request,$id)
+    public function propose(ProposalRequest $request,$id) : RedirectResponse | View
     {
         $proposal_attendance = [
             'attendance_time' => $request->attendance,
@@ -105,7 +119,7 @@ class AttendanceDetailController extends Controller
         return view('staff.detailConfirm',compact('proposal'));
     }
 
-    public function newDetailPropose(ProposalRequest $request)
+    public function newDetailPropose(ProposalRequest $request) :View
     {
         $proposal_attendance = [
             'attendance_time' => $request->attendance,
@@ -180,7 +194,7 @@ class AttendanceDetailController extends Controller
         return view('staff.detailConfirm',compact('proposal'));
     }
 
-    public function applyList(Request $request)
+    public function applyList(Request $request) : View
     {
         $query = Proposal::with('user','attendance');
 
@@ -199,11 +213,11 @@ class AttendanceDetailController extends Controller
         if(auth()->user()->is_admin){
             return view('staff.applyList',compact('proposals'),['nav' => 'admin']);
         }
-        
+
         return view('staff.applyList',compact('proposals'));
     }
 
-    public function detailConfirmShow($id)
+    public function detailConfirmShow($id) : View
     {
         $proposal = Proposal::with(['user','attendance'])->findOrFail($id);
 

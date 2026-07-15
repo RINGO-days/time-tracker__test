@@ -12,7 +12,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize() : bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             'date' => [
@@ -41,7 +41,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
         }
     }
 
-    public function messages()
+    public function messages() : array
     {
         return [
             'date.unique' => 'この日付の勤怠はすでに登録されています。',
@@ -53,7 +53,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
         ];
     }
 
-    public function prepareForValidation()
+    public function prepareForValidation() : void
     {
         $attendance = $this->route('attendanceRecord');
 

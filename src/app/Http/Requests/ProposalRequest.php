@@ -21,7 +21,7 @@ class ProposalRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             'attendance' => ['required','date_format:H:i'],
@@ -39,7 +39,7 @@ class ProposalRequest extends FormRequest
         ];
     }
     
-    public function messages()
+    public function messages() : array
     {
         return [
             'attendance.required' => '出勤時間を入力してください。',

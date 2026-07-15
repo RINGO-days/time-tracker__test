@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class Proposal extends Model
 {
@@ -24,11 +26,11 @@ class Proposal extends Model
         'proposed_rest' => 'array',
     ];
 
-    public function user()
+    public function user() : BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-    public function attendance()
+    public function attendance() : BelongsTo
     {
         return $this->belongsTo(Attendance::class);
     }

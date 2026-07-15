@@ -10,11 +10,13 @@ use App\Models\User;
 use App\Models\Proposal;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Services\AttendanceService;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 
 class AdminController extends Controller
 {
-    public function dailyAttendance(Request $request,AttendanceService $attendanceService)
+    public function dailyAttendance(Request $request,AttendanceService $attendanceService) : View
     {
         $targetDay = Carbon::parse($request->get('day',Carbon::today()->toDateString()));
         $preDay = Carbon::parse($targetDay)->copy()->subDay()->format('Y/m/d');
@@ -39,7 +41,7 @@ class AdminController extends Controller
         return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
     }
 
-    public function editDetail(Request $request,$id)
+    public function editDetail(Request $request,$id) : View
     {
         $attendance = Attendance::with('user')
                     ->find($id);
@@ -55,13 +57,13 @@ class AdminController extends Controller
         return view('common.detail',compact('details','rests'),['nav' => 'admin']);
     }
 
-    public function staffList()
+    public function staffList() : View
     {
         $users = User::all();
         return view('admin.staffList',compact('users'),['nav' => 'admin']);
     }
 
-    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id)
+    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id) :View
     {
         extract($attendanceService->getMonthPeriod($request));
         $records = $attendanceService->getMonthlyRecords($request);
@@ -70,7 +72,7 @@ class AdminController extends Controller
         return view('admin.staffMonthlyAttendance',compact('records','preMonth','nextMonth','targetMonth','user'),['nav' => 'admin']);
     }
 
-    public function export(Request $request,AttendanceService $attendanceService)
+    public function export(Request $request,AttendanceService $attendanceService) : StreamedResponse
     {
         extract($attendanceService->getMonthPeriod($request));
         $user = User::find($request->id);
@@ -103,14 +105,14 @@ class AdminController extends Controller
         return $response;
     }
 
-    public function requestShow($attendance_correct_request_id)
+    public function requestShow($attendance_correct_request_id) : View
     {
         $proposal = Proposal::with(['user','attendance.rests'])->findOrFail($attendance_correct_request_id);
 
         return view('admin.correctionApprove',compact('proposal'),['nav' => 'admin']);
     }
 
-    public function approve(Request $request,$attendance_correct_request_id)
+    public function approve(Request $request,$attendance_correct_request_id) : RedirectResponse
     {
         $proposal = Proposal::with('user')
                     ->find($attendance_correct_request_id);

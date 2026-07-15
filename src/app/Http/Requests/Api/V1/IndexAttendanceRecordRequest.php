@@ -11,7 +11,7 @@ class IndexAttendanceRecordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize() : bool
     {
         return true;
     }
@@ -21,7 +21,7 @@ class IndexAttendanceRecordRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             'user_id' => ['nullable','integer'],
@@ -32,7 +32,7 @@ class IndexAttendanceRecordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages() : array
     {
         return [
             'user_id.integer' => 'ユーザーIDは整数を入力してください。',
