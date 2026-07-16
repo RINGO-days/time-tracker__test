@@ -9,7 +9,7 @@
 @endsection
 
 @section('main')
-    @if(auth()->user()->is_admin && ($proposalStatus ?? null) === 1)
+    @if(($proposalStatus ?? null) === 1)
         <div class="message__box">
             <p class="message">この勤怠はすでに修正申請があります。
                 <a class="request-list__link" href="/stamp_correction_request/list">修正申請一覧へ</a>

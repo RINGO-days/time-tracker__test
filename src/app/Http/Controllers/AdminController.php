@@ -57,7 +57,7 @@ class AdminController extends Controller
         $proposalStatus = Proposal::where('attendance_id',$attendance->id)->latest()->value('status');
 
         return view('common.detail',compact('details','rests','proposalStatus'),['nav' => 'admin']);
-    }
+    }    
 
     public function staffList() : View
     {
@@ -155,5 +155,95 @@ class AdminController extends Controller
         ]);
 
         return back();
+    }
+
+    public function newDetailByAdmin(Request $request,$id) : View
+    {
+        $user = User::findOrFail($id);
+        $details = [
+            'attendance_id' => 'new_id',
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'date' => $request->query('date'),
+        ];
+        $rests = [];
+        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
+    }
+
+    public function newDetailProposeByAdmin(ProposalRequest $request,$id) : RedirectResponse | View
+    {
+        $user = User::findOrFail($id);
+        $proposal_attendance = [
+            'attendance_time' => $request->attendance,
+            'leave_time' => $request->leave,
+        ];
+
+        $proposal_rest = [];
+        $proposal_rests = $request->rest;
+        if($proposal_rests){
+            foreach($proposal_rests as $key => $rest){
+                if(!empty($rest['rest_start'])){
+                    $proposal_rest[] = [
+                        'rest_id' => $rest['rest_id'] ?? null,
+                        'rest_start' => $rest['rest_start'],
+                        'rest_end' => $rest['rest_end'],
+                    ];
+                };
+            };
+        };
+        $proposal = Proposal::create([
+            'user_id' => $user->id,
+            'target_date' => $request->date,
+            'proposed_attendance' => $proposal_attendance ?? null,
+            'proposed_rest' => $proposal_rest ?? null,
+            'remarks' => $request->remarks,
+        ]);
+
+        if(auth()->user()->is_admin){
+            $attendance = Attendance::where('user_id',$proposal->user_id)
+                        ->where('attendance_date',$proposal->target_date)
+                        ->first();
+
+            if($attendance){
+                $attendance->update([
+                    'attendance_time' => $proposal_attendance['attendance_time'],
+                    'leave_time' => $proposal_attendance['leave_time'],
+                ]);
+            }else{
+                $attendance = Attendance::create([
+                    'user_id' => $proposal->user_id,
+                    'attendance_date' => $proposal->target_date,
+                    'attendance_time' => $proposal_attendance['attendance_time'],
+                    'leave_time' => $proposal_attendance['leave_time'],
+                ]);
+                $proposal->update([
+                    'attendance_id' => $attendance->id,
+                    'status' => 2
+                ]);
+            }
+
+            if($proposal_rests){
+                foreach($proposal_rests as $restData){
+                    if(empty($restData['rest_start'])){
+                        continue;
+                    }
+
+                    if(!empty($restData['rest_id'])){
+                        Rest::where('id',$restData['rest_id'])
+                            ->update([
+                                'rest_start' => $restData['rest_start'],
+                                'rest_end' => $restData['rest_end'],
+                            ]);
+                    }else{
+                        Rest::create([
+                            'attendance_id' => $attendance->id,
+                            'rest_start' => $restData['rest_start'],
+                            'rest_end' => $restData['rest_end'],
+                        ]);
+                    }
+                }
+            }
+            return redirect('/admin/attendance/list');
+        }
     }
 }

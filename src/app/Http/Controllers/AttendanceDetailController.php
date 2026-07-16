@@ -50,17 +50,20 @@ class AttendanceDetailController extends Controller
         return view('common.detail',compact('details','rests'));
     }
 
-    public function newDetail(Request $request,$id) : View
+    public function newDetail(Request $request) : View
     {
-        $user = User::findOrFail($id);
         $details = [
             'attendance_id' => 'new_id',
-            'user_id' => $user->id,
-            'name' => $user->name,
+            'user_id' => auth()->id(),
+            'name' => auth()->user()->name,
             'date' => $request->query('date'),
         ];
         $rests = [];
-        return view('common.detail',compact('details','rests'));
+        $proposalStatus = Proposal::where('user_id',auth()->id())
+                            ->where('target_date',$request->date)
+                            ->latest()
+                            ->value('status');
+        return view('common.detail',compact('details','rests','proposalStatus'));
     }
 
     public function propose(ProposalRequest $request,$id) : RedirectResponse | View
@@ -101,6 +104,10 @@ class AttendanceDetailController extends Controller
 
             if($proposal_rests){
                 foreach($proposal_rests as $restData){
+                    if (empty($restData['rest_start']) || empty($restData['rest_end'])) {
+                    continue;
+                    }
+
                     if(!empty($restData['rest_id'])){
                         Rest::where('id',$restData['rest_id'])
                             ->update([
@@ -116,7 +123,11 @@ class AttendanceDetailController extends Controller
                     }
                 }
             }
-            return redirect("/admin/attendance/staff/{$id}");
+            $proposal->update([
+                'status' => 2
+            ]);
+
+            return redirect("/admin/attendance/list");
         }
 
         return view('staff.detailConfirm',compact('proposal'));
