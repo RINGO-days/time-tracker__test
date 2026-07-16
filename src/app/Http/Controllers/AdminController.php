@@ -48,13 +48,14 @@ class AdminController extends Controller
         $rests = $attendance->rests;
 
         $details = [
-            'id' => $attendance->id,
+            'attendance_id' => $attendance->id,
             'name' => $attendance->user->name,
             'date' => $attendance->attendance_date,
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
         $proposalStatus = Proposal::where('attendance_id',$attendance->id)->latest()->value('status');
+
         return view('common.detail',compact('details','rests','proposalStatus'),['nav' => 'admin']);
     }
 

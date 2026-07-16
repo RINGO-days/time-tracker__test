@@ -56,7 +56,7 @@
                     @if($record['attendance_id'])
                         <a class="detail-link" href="/admin/attendance/{{$record['attendance_id']}}">詳細</a>
                     @else
-                        <a class="detail-link" href="/attendance/newDetail?date={{$record['date']}}">詳細</a>
+                        <a class="detail-link" href="/attendance/newDetail/staff/{{$user->id}}?date={{$record['date']}}">詳細</a>
                     @endif
                 </td>
             </tr>

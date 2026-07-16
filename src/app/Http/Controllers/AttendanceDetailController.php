@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Rest;
+use App\Models\User;
 use App\Models\Proposal;
 use App\Http\Requests\ProposalRequest;
 use Illuminate\View\View;
@@ -38,7 +39,7 @@ class AttendanceDetailController extends Controller
         }
 
         $details = [
-            'id' => $attendance->id,
+            'attendance_id' => $attendance->id,
             'name' => $attendance->user->name,
             'date' => $attendance->attendance_date,
             'attendance' => $attendance->attendance_time->format('H:i'),
@@ -49,11 +50,13 @@ class AttendanceDetailController extends Controller
         return view('common.detail',compact('details','rests'));
     }
 
-    public function newDetail(Request $request) : View
+    public function newDetail(Request $request,$id) : View
     {
+        $user = User::findOrFail($id);
         $details = [
-            'id' => 'new_id',
-            'name' => auth()->user()->name,
+            'attendance_id' => 'new_id',
+            'user_id' => $user->id,
+            'name' => $user->name,
             'date' => $request->query('date'),
         ];
         $rests = [];
@@ -113,18 +116,21 @@ class AttendanceDetailController extends Controller
                     }
                 }
             }
-            return redirect('/admin/attendance/staff/{$id}');
+            return redirect("/admin/attendance/staff/{$id}");
         }
 
         return view('staff.detailConfirm',compact('proposal'));
     }
 
-    public function newDetailPropose(ProposalRequest $request) :View
+    public function newDetailPropose(ProposalRequest $request,$id) : RedirectResponse | View
     {
+        $user = User::findOrFail($id);
         $proposal_attendance = [
             'attendance_time' => $request->attendance,
             'leave_time' => $request->leave,
         ];
+
+        $proposal_rest = [];
         $proposal_rests = $request->rest;
         if($proposal_rests){
             foreach($proposal_rests as $key => $rest){
@@ -138,7 +144,7 @@ class AttendanceDetailController extends Controller
             };
         };
         $proposal = Proposal::create([
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
             'target_date' => $request->date,
             'proposed_attendance' => $proposal_attendance ?? null,
             'proposed_rest' => $proposal_rest ?? null,
@@ -163,7 +169,8 @@ class AttendanceDetailController extends Controller
                     'leave_time' => $proposal_attendance['leave_time'],
                 ]);
                 $proposal->update([
-                    'attendance_id' => $attendance->id
+                    'attendance_id' => $attendance->id,
+                    'status' => 2
                 ]);
             }
 

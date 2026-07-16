@@ -9,7 +9,7 @@
 @endsection
 
 @section('main')
-    @if(auth()->user()->is_admin && $proposalStatus === 1)
+    @if(auth()->user()->is_admin && ($proposalStatus ?? null) === 1)
         <div class="message__box">
             <p class="message">この勤怠はすでに修正申請があります。
                 <a class="request-list__link" href="/stamp_correction_request/list">修正申請一覧へ</a>
@@ -17,10 +17,10 @@
         </div>
     @endif
     <h1 class="title">勤怠詳細</h1>
-    @if($details['id'] === 'new_id')
-        <form action="/newDetail/propose" method="POST">
+    @if($details['attendance_id'] === 'new_id')
+        <form action="/newDetail/propose/staff/{{$details['user_id']}}" method="POST">
     @else
-        <form action="/detail/propose/{{$details['id']}}" method="POST">
+        <form action="/detail/propose/{{$details['attendance_id']}}" method="POST">
     @endif
         @csrf
         <table class="detail-table">
