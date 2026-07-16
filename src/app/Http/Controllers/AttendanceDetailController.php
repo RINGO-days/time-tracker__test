@@ -104,8 +104,13 @@ class AttendanceDetailController extends Controller
 
             if($proposal_rests){
                 foreach($proposal_rests as $restData){
-                    if (empty($restData['rest_start']) || empty($restData['rest_end'])) {
-                    continue;
+                    if (!empty($restData['rest_id']) && empty($restData['rest_start'])) {
+                        Rest::where('id', $restData['rest_id'])->delete();
+                        continue;
+                    }
+                    
+                    if (empty($restData['rest_start'])) {
+                        continue;
                     }
 
                     if(!empty($restData['rest_id'])){

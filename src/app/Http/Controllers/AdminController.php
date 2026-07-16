@@ -57,7 +57,7 @@ class AdminController extends Controller
         $proposalStatus = Proposal::where('attendance_id',$attendance->id)->latest()->value('status');
 
         return view('common.detail',compact('details','rests','proposalStatus'),['nav' => 'admin']);
-    }    
+    }
 
     public function staffList() : View
     {
