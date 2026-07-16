@@ -43,10 +43,10 @@ class AdminController extends Controller
 
     public function editDetail(Request $request,$id) : View
     {
-        $attendance = Attendance::with('user')
-                    ->find($id);
-        $rests = Rest::where('attendance_id',$attendance->id)
-                    ->get();
+        $attendance = Attendance::with('user','rests','proposals')
+                    ->findOrFail($id);
+        $rests = $attendance->rests;
+
         $details = [
             'id' => $attendance->id,
             'name' => $attendance->user->name,
@@ -54,7 +54,8 @@ class AdminController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
+        $proposalStatus = Proposal::where('attendance_id',$attendance->id)->latest()->value('status');
+        return view('common.detail',compact('details','rests','proposalStatus'),['nav' => 'admin']);
     }
 
     public function staffList() : View

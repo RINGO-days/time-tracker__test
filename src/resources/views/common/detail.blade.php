@@ -9,6 +9,13 @@
 @endsection
 
 @section('main')
+    @if(auth()->user()->is_admin && $proposalStatus === 1)
+        <div class="message__box">
+            <p class="message">この勤怠はすでに修正申請があります。
+                <a class="request-list__link" href="/stamp_correction_request/list">修正申請一覧へ</a>
+            </p>
+        </div>
+    @endif
     <h1 class="title">勤怠詳細</h1>
     @if($details['id'] === 'new_id')
         <form action="/newDetail/propose" method="POST">
@@ -145,6 +152,6 @@
         <div class="fix-button__inner">
             <button class="fix-button" type="submit">修正</button>
         </div>
-        <input type="hedden" name="date" value="{{$details['date']}}">
+        <input type="hidden" name="date" value="{{$details['date']}}">
     </form>
 @endsection
