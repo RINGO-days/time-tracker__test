@@ -72,6 +72,9 @@ class FortifyServiceProvider extends ServiceProvider
                 }elseif(auth()->user()->is_admin && str_contains(url()->previous(),'login')){
                     auth()->logout();
                     return back()->with('message','一般スタッフ用のページにはログインできません。');
+                }elseif(!auth()->user()->is_admin && str_contains(url()->previous(),'admin/login')){
+                    auth()->logout();
+                    return back()->with('message','管理者ページにはログインの権限がありません。');
                 }
 
                 return redirect('/');
