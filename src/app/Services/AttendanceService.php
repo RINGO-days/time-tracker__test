@@ -116,7 +116,7 @@ class AttendanceService
             }else{
                 $working_time = '';
             };
-    
+
             // 休憩時間の複数回の合計の計算
             $rest_time = $this->calculateRestTime($attendance_day);
 

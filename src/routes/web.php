@@ -31,7 +31,6 @@ Route::middleware('auth','verified')->group(function(){
             Route::get('/attendance/{id}',[AdminController::class,'editDetail']);
             Route::get('/staff/list',[AdminController::class,'staffList']);
             Route::get('/attendance/newDetail', [AdminController::class, 'newDetailByAdmin']);
-            Route::post('/newDetail/propose/staff/{id}', [AdminController::class, 'newDetailProposeByAdmin']);
             Route::get('/attendance/staff/{id}',[AdminController::class,'staffMonthlyAttendance']);
             Route::get('/csvExport/{id}',[AdminController::class,'export']);
             Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminController::class,'requestShow']);
