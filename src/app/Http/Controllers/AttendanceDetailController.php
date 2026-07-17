@@ -68,6 +68,8 @@ class AttendanceDetailController extends Controller
 
     public function propose(ProposalRequest $request,$id) : RedirectResponse | View
     {
+        $attendance = Attendance::findOrFail($id);
+
         $proposal_attendance = [
             'attendance_time' => $request->attendance,
             'leave_time' => $request->leave,
@@ -75,19 +77,19 @@ class AttendanceDetailController extends Controller
         $proposal_rests = $request->rest;
         if($proposal_rests){
             foreach($proposal_rests as $key => $rest){
-                if(!empty($rest['rest_start'])){
+                if(!empty($rest['rest_id']) || !empty($rest['rest_start'])){
                     $proposal_rest[] = [
                         'rest_id' => $rest['rest_id'] ?? null,
-                        'rest_start' => $rest['rest_start'],
-                        'rest_end' => $rest['rest_end'],
+                        'rest_start' => $rest['rest_start'] ?? null,
+                        'rest_end' => $rest['rest_end'] ?? null
                     ];
-                };
-            };
-        };
+                }
+            }
+        }
 
         $proposal = Proposal::create([
-            'user_id' => auth()->id(),
-            'attendance_id' => $id,
+            'user_id' => $attendance->user_id,
+            'attendance_id' => $attendance->id,
             'target_date' => $request->date,
             'proposed_attendance' => $proposal_attendance,
             'proposed_rest' => $proposal_rest ?? null,

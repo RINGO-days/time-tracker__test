@@ -9,6 +9,12 @@
 @endsection
 
 @section('main')
+<a href="/login">ログイン</a>
+<form action="">
+<input class="hidden" type="email" name="email" value="user1@example.com">
+<input class="hidden" type="password" name="password" value="password">
+<button>ゲスト</button>
+</form>
     <div class="flash-message__box">
         @if (session('message'))
             <span class="flash-message">{{ session('message') }}</span>

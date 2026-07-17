@@ -59,6 +59,9 @@
                         </div>
                     </td>
                 </tr>
+                <input type="hidden" name="rest[{{$loop->index}}][rest_id]" value="{{$rest['rest_id'] ?? ''}}">
+                <input type="hidden" name="rest[{{$loop->index}}][rest_start]" value="{{$rest['rest_start'] ?? ''}}">
+                <input type="hidden" name="rest[{{$loop->index}}][rest_end]" value="{{$rest['rest_end'] ?? ''}}">
             @endforeach
             <tr class="table-raw">
                 <th class="header-item">備考</th>

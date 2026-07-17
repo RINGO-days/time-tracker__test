@@ -35,6 +35,7 @@ class AttendanceService
         $rests = Rest::where('attendance_id',$attendanceDay->id)
                     ->get();
         $rest_total_minutes = 0;
+        $in_resting = false;
         foreach($rests as $rest){
             if($rest->rest_start && $rest->rest_end){
                 $rest_start = Carbon::parse($rest->rest_start);
@@ -44,7 +45,13 @@ class AttendanceService
                 $rest_end_trunk = $rest_end->copy()->startOfMinute();
 
                 $rest_total_minutes += $rest_start_trunk->diffInMinutes($rest_end_trunk);
+            }elseif($rest->rest_start && !$rest->rest_end){
+                $in_resting = true;
             }
+        }
+
+        if($in_resting){
+            return '';
         }
         $rest_hour = floor($rest_total_minutes / 60);
         $rest_minute = floor($rest_total_minutes % 60);

@@ -9,6 +9,7 @@
 @endsection
 
 @section('main')
+<a href="/admin/login">管理者</a>
     <div class="flash-message__box">
         @if (session('message'))
             <span class="flash-message">{{ session('message') }}</span>
