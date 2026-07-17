@@ -32,14 +32,15 @@
     width:30%;
 }
 .header-item:first-child,.item-cell:first-child{
-    padding-left: 15%;
+    padding-left: 10%;
+    white-space: nowrap;
 }
 .header-item:last-child {
     border-radius: 0 8px 0 0;
     width:30%;
 }
 .header-item:last-child,.item-cell:last-child{
-    padding-right: 15%;
+    padding-right: 13%;
 }
 .item-cell:nth-child(2){
     white-space: nowrap;
