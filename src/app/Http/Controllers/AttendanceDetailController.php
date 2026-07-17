@@ -15,11 +15,13 @@ use Illuminate\Http\RedirectResponse;
 class AttendanceDetailController extends Controller
 {
     /**
-     * 一般ユーザーまたは管理者が月次勤怠リストから出勤データある日付の詳細ボタンを押した時の詳細画面表示(一般ユーザーと管理者で共通のアクション)
+     * 出勤データの詳細画面、または承認待ち画面を表示する。
+     *
      * 詳細画面では選択した日付に登録されているユーザーの名前、選択した日付、入力フィールドに出勤時間、退勤時間、休憩前後の時間、修正理由を記載する備考欄を表示
-     * * 動的セグメントでURLから出勤のIDをfindする
-     * - if文を用いて、見つけた勤怠データから勤怠修正申請テーブル(proposalsテーブル)に紐付いたデータがあり、かつ申請ステータスが１(申請中)の場合、承認待ちの旨のコメントがある画面を表示する
-     * - 上記以外の場合は変更したい日付の勤怠データが表示されているフォーム画面を表示する
+     * 【処理の流れ】
+     * 1 動的セグメントでURLから出勤のIDをfindする
+     * 2 見つけた勤怠データから勤怠修正申請テーブル(proposalsテーブル)に紐付いたデータがあり、かつ申請ステータスが１(申請中)の場合、承認待ちの旨のコメントがある画面を表示する
+     * 3 上記以外の場合は変更したい日付の勤怠データが表示されているフォーム画面を表示する
      *
      * @param int $id 勤怠ID
      *
@@ -50,6 +52,18 @@ class AttendanceDetailController extends Controller
         return view('common.detail',compact('details','rests'));
     }
 
+    /**
+     * **追加機能**
+     * スタッフ画面の月次勤怠リストに記載されていないレコードの詳細ボタンを押した時の画面表示
+     *
+     * - 選択した日付をクエリパラメータから取得し、詳細画面に表示する
+     * - 休憩データを入力できる空欄を作るため、$restsは空の配列を渡す
+     * - 選択した日付の勤怠から承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージが表示される
+     *
+     * @param Request $request クエリパラメータから新規勤怠登録する日付を取得
+     *
+     * @return View
+     */
     public function newDetail(Request $request) : View
     {
         $details = [
@@ -66,6 +80,20 @@ class AttendanceDetailController extends Controller
         return view('common.detail',compact('details','rests','proposalStatus'));
     }
 
+    /**
+     * 勤怠を修正申請する詳細画面から修正ボタンを押したときのアクション
+     *
+     * - 動的セグメントから出勤データを取得
+     * - 送られてきた出勤時間と退勤時間はjson形式で保存
+     * - 同じく送られてきた休憩データは複数個ある可能性があるため、foreachで１件ずつ、配列形式で保存する
+     * (後に休憩データを削除するロジックがあるためrest_idも同時に保存する)
+     * - 送られてきたデータ全てをproposalsテーブルに保存する
+     *
+     * 【管理者用のロジック】
+     * - 先ほどproposalsテーブルに保存したデータをattendancesテーブル、restsテーブルにアップデートする
+     * **追加機能**
+     * - すでに休憩データのデフォルト値があった状態で、休憩開始時間と休憩終了時間を空欄にして送られてきた場合、送られてきたrest_idに該当する休憩データを削除する
+     */
     public function propose(ProposalRequest $request,$id) : RedirectResponse | View
     {
         $attendance = Attendance::findOrFail($id);
@@ -97,8 +125,6 @@ class AttendanceDetailController extends Controller
         ]);
 
         if(auth()->user()->is_admin){
-            $attendance = Attendance::find($id);
-
             $attendance->update([
                 'attendance_time' => $proposal_attendance['attendance_time'],
                 'leave_time' => $proposal_attendance['leave_time'],
@@ -110,7 +136,7 @@ class AttendanceDetailController extends Controller
                         Rest::where('id', $restData['rest_id'])->delete();
                         continue;
                     }
-                    
+
                     if (empty($restData['rest_start'])) {
                         continue;
                     }
@@ -140,6 +166,13 @@ class AttendanceDetailController extends Controller
         return view('staff.detailConfirm',compact('proposal'));
     }
 
+    /**
+     * **追加機能**
+     * 新規で勤怠を作成するためのアクション(スタッフ、管理者共通)
+     * 
+     * - クエリパラメータから新規登録するスタッフのIDを取得
+     * - 
+     */
     public function newDetailPropose(ProposalRequest $request,$id) : RedirectResponse | View
     {
         $user = User::findOrFail($id);
