@@ -90,8 +90,14 @@ php artisan migrate:fresh --seed
 > - AdminMiddleware
 > - StaffMiddleware
 ---
-- ### 既存の勤怠データではなく、新規で勤怠データを作成するメソッドの作成
+- ### 既存の勤怠データではなく、新規で勤怠データを作成するメソッドの作成（過去の休暇申請など）
 > 月次勤怠リストに出勤日の時間の記載がない欄の詳細ボタンから、新規で勤怠を作成するできるようにメソッドを追加。
 > #### 作成したルート
-> - Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']);
-> - Route::post('/newDetail/propose', [AttendanceDetailController::class, 'newDetailPropose']);
+> - (スタッフ用)Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']); //新規勤怠登録画面の表示
+> - (管理者用)Route::get('/admin/attendance/newDetail', [AdminController::class, 'newDetailByAdmin']); //新規勤怠登録画面の表示
+> - Route::post('/newDetail/propose/staff/{id}', [AttendanceDetailController::class, 'newDetailPropose']); //登録画面から登録するアクション
+- ### 修正申請する際に、既存の休憩データの値を消して送信した場合、restsテーブルのレコードを削除する
+> 修正申請を行う勤怠詳細画面で、既存の休憩データの入力フィールドの値を休憩開始時間と休憩終了時間を消して送信し、管理者が承認、もしくは直接修正した場合に休憩テーブルの該当のレコードを削除するロジック
+> #### 追加したコントローラーアクション
+> - AttendanceDetailController proposal //スタッフ、管理者共通、修正を申請するためのアクション。スタッフだったら修正申請、管理者だったら直接updateを行う。管理者の分岐のアクションにこのロジックを追加
+> - AdminController　approve //管理者画面の修正申請を承認するアクションに追加
