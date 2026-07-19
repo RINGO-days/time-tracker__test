@@ -90,11 +90,11 @@ class AttendanceDetailController extends Controller
      * - サービスクラスからproposalsテーブルに保存した情報がリターンされる。
      *
      * 管理者は日次勤怠画面にリダイレクト、スタッフは修正申請済み画面を表示
-     * 
+     *
      * @param ProposalRequest $request バリデーション済みの勤怠修正データ
      * @param AttendanceService $attendanceService リクエストデータをproposalsテーブルに保存するサービス
      * @param int $id 勤怠ID
-     * 
+     *
      * @return RedirectResponse 管理者の場合
      * @return View スタッフの場合
      */
@@ -115,16 +115,16 @@ class AttendanceDetailController extends Controller
     /**
      * **追加機能**
      * 新規で勤怠を作成するためのアクション(スタッフ、管理者共通)
-     * 
+     *
      * - 基本機能は上記のproposeと同じ
      * - 動的セグメントから直接ユーザーIDを取得し、サービスクラスに渡している
-     * 
+     *
      * 管理者は日次勤怠画面にリダイレクト、スタッフは修正申請済み画面を表示
-     * 
+     *
      * @param ProposalRequest $request バリデーション済みの勤怠修正データ
      * @param AttendanceService $attendanceService リクエストデータをproposalsテーブルに保存するサービス
      * @param int $id ユーザーID
-     * 
+     *
      * @return RedirectResponse 管理者の場合
      * @return View スタッフの場合
      */
@@ -142,15 +142,15 @@ class AttendanceDetailController extends Controller
 
     /**
      * 承認待ちもしくは承認済みの勤怠のリスト画面(クエリパラメータでタブの切り替え)
-     * 
+     *
      * - スタッフの場合、自分のIDのみを取得
      * - クエリパラメータtabがapprovedの時、proposalsテーブルのステータスが２(承認済み)のデータを取得
      * - それ以外は承認待ちのデータを取得
-     * 
+     *
      * スタッフと管理者は別のヘッダーを使用しているため、Viewファイルは同じだが、管理者の場合ヘッダー用の変数をViewに渡している。
-     * 
+     *
      * @param Request $request クエリパラメータで承認待ちと承認済みのタブの切り替え
-     * 
+     *
      * @return View
      */
     public function applyList(Request $request) : View
@@ -179,12 +179,12 @@ class AttendanceDetailController extends Controller
     /**
      * スタッフが勤怠詳細画面から修正リクエストを送った後に表示される画面
      * 修正できませんのコメントとともにユーザーが修正申請した入力データが表示される
-     * 
+     *
      * - 動的セグメントから修正申請データのIDを取得
      * - それらをViewファイルに渡して、画面表示する
-     * 
+     *
      * @param int $id 修正申請データのID
-     * 
+     *
      * @return View
      */
     public function detailConfirmShow($id) : View

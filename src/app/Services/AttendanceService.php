@@ -150,7 +150,8 @@ class AttendanceService
         }
 
         $period = CarbonPeriod::create($startOfMonth,$endOfMonth);
-        foreach($period as $date){
+
+        return collect($period)->map(function ($date) use ($attendance_month){
             $dateString = $date->toDateString();
             $weeks = ['日','月','火','水','木','金','土'];
             $week = $weeks[$date->dayOfWeek];
@@ -167,13 +168,11 @@ class AttendanceService
                 $working_time = sprintf('%02d:%02d', $hour, $minute);
             }else{
                 $working_time = '';
-            };
+            }
 
             $rest_time = $this->calculateRestTime($attendance_day);
-
             $actual_time = $this->calculateActualWorkTime($attendance_day);
-
-            $records[] = [
+            return [
                 'attendance_id' => $attendance_day ? $attendance_day->id : '',
                 'date' => $dateString,
                 'week' => $week,
@@ -182,8 +181,7 @@ class AttendanceService
                 'rest' => $rest_time,
                 'actualTime' => $actual_time,
             ];
-        }
-        return $records;
+        })->all();
     }
 
     /**
