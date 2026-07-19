@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use App\Models\Rest;
 use App\Models\Attendance;
 use App\Models\Proposal;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
@@ -186,6 +187,7 @@ class AttendanceService
 
     /**
      * 勤怠修正申請の作成(および管理者による即時反映、自動承認処理)
+     * DBトランザクションによりデータ不整合を防ぐ
      *
      * - 勤怠詳細のフォーム画面から送られてきたそれぞれの修正内容をproposalsテーブルに保存
      * - 管理者の場合、修正申請の保存と同時に、実際の勤怠•休憩データへ内容を即時上書き(レコードがなければ新規作成)する
@@ -194,7 +196,7 @@ class AttendanceService
      *
      * @param Request $request 勤怠詳細画面の修正申請のフォームデータ
      * @param User $user 修正対象のスタッフ
-     * 
+     *
      * @return Proposal $proposal 作成された修正申請データ
      */
     public function createAttendanceDetailProposal(Request $request,User $user) : Proposal
@@ -204,74 +206,76 @@ class AttendanceService
             'leave_time' => $request->leave,
         ];
 
-        $proposal_rest = [];
-        $proposal_rests = $request->rest;
-        if($proposal_rests){
-            foreach($proposal_rests as $key => $rest){
-                if(!empty($rest['rest_start'])){
-                    $proposal_rest[] = [
+        $proposal_rest = collect($request->rest)
+                ->filter(function ($rest){
+                    return !empty($rest['rest_start']);
+                })
+                ->map(function ($rest){
+                    return [
                         'rest_id' => $rest['rest_id'] ?? null,
                         'rest_start' => $rest['rest_start'],
                         'rest_end' => $rest['rest_end'],
                     ];
-                };
-            };
-        };
-        $proposal = Proposal::create([
-            'user_id' => $user->id,
-            'target_date' => $request->date,
-            'proposed_attendance' => $proposal_attendance ?? null,
-            'proposed_rest' => $proposal_rest ?? null,
-            'remarks' => $request->remarks,
-        ]);
+                })
+                ->all();
 
-        if(auth()->user()->is_admin){
-            $attendance = Attendance::where('user_id',$proposal->user_id)
-                        ->where('attendance_date',$proposal->target_date)
-                        ->first();
+        return DB::transaction(function () use ($proposal_attendance, $proposal_rest, $request, $user){
+            $proposal = Proposal::create([
+                'user_id' => $user->id,
+                'target_date' => $request->date,
+                'proposed_attendance' => $proposal_attendance ?? null,
+                'proposed_rest' => $proposal_rest ?? null,
+                'remarks' => $request->remarks,
+            ]);
 
-            if($attendance){
-                $attendance->update([
-                    'attendance_time' => $proposal_attendance['attendance_time'],
-                    'leave_time' => $proposal_attendance['leave_time'],
-                ]);
-            }else{
-                $attendance = Attendance::create([
-                    'user_id' => $proposal->user_id,
-                    'attendance_date' => $proposal->target_date,
-                    'attendance_time' => $proposal_attendance['attendance_time'],
-                    'leave_time' => $proposal_attendance['leave_time'],
-                ]);
-                $proposal->update([
-                    'attendance_id' => $attendance->id,
-                ]);
-            }
+            if(auth()->user()->is_admin){
+                $attendance = Attendance::where('user_id',$proposal->user_id)
+                            ->where('attendance_date',$proposal->target_date)
+                            ->first();
 
-            if($proposal_rests){
-                foreach($proposal_rests as $restData){
-                    if(empty($restData['rest_start'])){
-                        continue;
-                    }
+                if($attendance){
+                    $attendance->update([
+                        'attendance_time' => $proposal_attendance['attendance_time'],
+                        'leave_time' => $proposal_attendance['leave_time'],
+                    ]);
+                }else{
+                    $attendance = Attendance::create([
+                        'user_id' => $proposal->user_id,
+                        'attendance_date' => $proposal->target_date,
+                        'attendance_time' => $proposal_attendance['attendance_time'],
+                        'leave_time' => $proposal_attendance['leave_time'],
+                    ]);
+                    $proposal->update([
+                        'attendance_id' => $attendance->id,
+                    ]);
+                }
 
-                    if(!empty($restData['rest_id'])){
-                        Rest::where('id',$restData['rest_id'])
-                            ->update([
+                if($proposal_rest){
+                    foreach($proposal_rest as $restData){
+                        if(empty($restData['rest_start'])){
+                            continue;
+                        }
+
+                        if(!empty($restData['rest_id'])){
+                            Rest::where('id',$restData['rest_id'])
+                                ->update([
+                                    'rest_start' => $restData['rest_start'],
+                                    'rest_end' => $restData['rest_end'],
+                                ]);
+                        }else{
+                            Rest::create([
+                                'attendance_id' => $attendance->id,
                                 'rest_start' => $restData['rest_start'],
                                 'rest_end' => $restData['rest_end'],
                             ]);
-                    }else{
-                        Rest::create([
-                            'attendance_id' => $attendance->id,
-                            'rest_start' => $restData['rest_start'],
-                            'rest_end' => $restData['rest_end'],
-                        ]);
+                        }
                     }
                 }
+                $proposal->update([
+                    'status' => 2
+                ]);
             }
-            $proposal->update([
-                'status' => 2
-            ]);
-        }
-        return $proposal;
+            return $proposal;
+        });
     }
 }

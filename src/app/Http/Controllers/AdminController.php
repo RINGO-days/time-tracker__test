@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Services\AttendanceService;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 
 class AdminController extends Controller
@@ -108,7 +109,7 @@ class AdminController extends Controller
      *
      * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
      */
-    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id) :View
+    public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id) : View
     {
         extract($attendanceService->getMonthPeriod($request));
         $records = $attendanceService->getMonthlyRecords($request);
@@ -181,6 +182,7 @@ class AdminController extends Controller
 
     /**
      * 修正申請の詳細画面で、承認ボタンを押した時のアクション
+     * DBトランザクションによりデータ不整合を防ぐ
      *
      * - 動的セグメントから、修正申請データのIDを取得
      * - 出勤時間と退勤時間はそのままattendancesテーブルにアップデート
@@ -197,41 +199,44 @@ class AdminController extends Controller
      */
     public function approve($attendance_correct_request_id) : RedirectResponse
     {
+
         $proposal = Proposal::with('attendance.rests')
         ->find($attendance_correct_request_id);
 
-        $proposal->attendance->update([
-            'attendance_time' => $proposal->proposed_attendance['attendance_time'],
-            'leave_time' => $proposal->proposed_attendance['leave_time'],
-        ]);
+        DB::transaction(function () use ($proposal){
+            $proposal->attendance->update([
+                'attendance_time' => $proposal->proposed_attendance['attendance_time'],
+                'leave_time' => $proposal->proposed_attendance['leave_time'],
+            ]);
 
-        $attendance = $proposal->attendance;
-        if($proposal->proposed_rest === null || empty($proposal->proposed_rest)){
-            $attendance->rests()->delete();
-        }else{
-            foreach($proposal->proposed_rest ?? [] as $proposalRest){
-                if (!empty($proposalRest['rest_id']) && empty($proposalRest['rest_start'])) {
-                    Rest::where('id', $proposalRest['rest_id'])->delete();
-                    continue;
-                }
-                if(!empty($proposalRest['rest_id'])){
-                    Rest::where('id',$proposalRest['rest_id'])
-                        ->update([
+            $attendance = $proposal->attendance;
+            if($proposal->proposed_rest === null || empty($proposal->proposed_rest)){
+                $attendance->rests()->delete();
+            }else{
+                foreach($proposal->proposed_rest ?? [] as $proposalRest){
+                    if (!empty($proposalRest['rest_id']) && empty($proposalRest['rest_start'])) {
+                        Rest::where('id', $proposalRest['rest_id'])->delete();
+                        continue;
+                    }
+                    if(!empty($proposalRest['rest_id'])){
+                        Rest::where('id',$proposalRest['rest_id'])
+                            ->update([
+                                'rest_start' => $proposalRest['rest_start'],
+                                'rest_end' => $proposalRest['rest_end'],
+                            ]);
+                    }else{
+                        $attendance->rests()->create([
                             'rest_start' => $proposalRest['rest_start'],
                             'rest_end' => $proposalRest['rest_end'],
                         ]);
-                }else{
-                    $attendance->rests()->create([
-                        'rest_start' => $proposalRest['rest_start'],
-                        'rest_end' => $proposalRest['rest_end'],
-                    ]);
-                }
+                    }
 
+                }
             }
-        }
-        $proposal->update([
-            'status' => 2
-        ]);
+            $proposal->update([
+                'status' => 2
+            ]);
+        });
 
         return back();
     }

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Services\AttendanceService;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 
 class AttendanceController extends Controller
@@ -48,40 +49,56 @@ class AttendanceController extends Controller
     }
 
     /**
-     * - 打刻画面において出勤ボタンを押すとattendancesテーブルに本日の勤怠のデータがない場合、新しくattendancesテーブルにデータを作成し、打刻画面に戻る。出勤ステータスはデフォルトは１(出勤中)
-     * - 本日の出勤データがある場合では、打刻画面において退勤ボタンを押すと出勤ステータスを３(退勤済み)にアップデートし、打刻画面に戻る
+     * 打刻画面で出勤、もしくは退勤ボタンを押した時の処理
+     * DBトランザクションによりデータ不整合を防ぐ
+     * 処理後は打刻画面に戻る
+     *
+     * 【出勤】
+     * 新しくattendancesテーブルに現在時刻などのレコードを作成、出勤ステータスはデフォルトは１(出勤中)
+     * 【退勤】
+     * 退勤ボタンを押すと退勤時の時間を保存し出勤ステータスを３(退勤済み)に更新する。
      *
      * @return RedirectResponse
      */
     public function attendance() : RedirectResponse
     {
         $attendance = Attendance::where('user_id',auth()->id())
-                ->where('attendance_date',Carbon::today()->toDateString())
-                ->first();
-        if(!$attendance){
-            Attendance::create([
-                'user_id' => auth()->id(),
-                'attendance_date' => Carbon::today()->toDateString(),
-                'attendance_time' => now(),
-            ]);
-        }else{
-            $attendance->update([
-                'leave_time' => now(),
-                'status' => 3
-            ]);
-        }
+        ->where('attendance_date',Carbon::today()->toDateString())
+        ->first();
+
+        DB::transaction(function () use ($attendance){
+            if(!$attendance){
+                Attendance::create([
+                    'user_id' => auth()->id(),
+                    'attendance_date' => Carbon::today()->toDateString(),
+                    'attendance_time' => now(),
+                ]);
+            }else{
+                $attendance->update([
+                    'leave_time' => now(),
+                    'status' => 3
+                ]);
+            }
+        });
         return back();
     }
 
     /**
-     * - すでに出勤済みの状態(出勤ステータスが１)の場合、打刻画面において休憩入ボタンを押すと新しくrestsテーブルに休憩入りの時間が記録され、出勤ステータスが２(休憩中)にアップデートされる。
-     * - 休憩中の場合、打刻画面の休憩戻ボタンを押すとrestsテーブルに休憩終了時の時間が記録され、出勤ステータスが１(出勤中)にアップデートされる。
+     * 打刻画面で休憩入、もしくは休憩戻ボタンを押した時の処理
+     * DBトランザクションによりデータ不整合を防ぐ
+     * 処理後は打刻画面に戻る
+     *
+     * 【休憩入】
+     * 出勤ステータスが１(出勤中)の場合に、restsテーブルに休憩入りの時間が保存され、出勤ステータスが２(休憩中)に更新される
+     * 【休憩戻】
+     * restsテーブルに休憩終了時の時間が保存され、出勤ステータスが１(出勤中)に更新される
      *
      * @return RedirectResponse
      */
     public function rest() : RedirectResponse
     {
-        $attendance = Attendance::where('user_id',auth()->id())
+        $attendance = Attendance::with('rests')
+                ->where('user_id',auth()->id())
                 ->where('attendance_date',Carbon::today()->toDateString())
                 ->first();
 
@@ -89,34 +106,37 @@ class AttendanceController extends Controller
                 ->whereNull('rest_end')
                 ->first();
 
-        if(!$rest){
-            Rest::create([
-                'attendance_id' => $attendance->id,
-                'rest_start' => now(),
-            ]);
-            $attendance->update([
-                'status' =>2,
-            ]);
-        }else{
-            $rest->update([
-                'rest_end' => now(),
-            ]);
-            $attendance->update([
-                'status' =>1,
-            ]);
-        }
+        DB::transaction(function () use ($attendance,$rest){
+            if(!$rest){
+                Rest::create([
+                    'attendance_id' => $attendance->id,
+                    'rest_start' => now(),
+                ]);
+                $attendance->update([
+                    'status' =>2,
+                ]);
+            }else{
+                $rest->update([
+                    'rest_end' => now(),
+                ]);
+                $attendance->update([
+                    'status' =>1,
+                ]);
+            }
+        });
 
         return back();
     }
 
     /**
      * 一般スタッフ用のログインしているユーザーの月毎の勤怠の画面表示
-     * サービスクラス(getMonthPeriod)からは、$preMonth(先月),$nextMonth(翌月),$targetMonth(当月)のデータをextract関数を使用し、取得 　
-     * サービスクラス(getMonthlyRecords)から一日の出勤表示に必要なデータ(出勤時間、休憩時間、労働時間など)を取得
+     *
+     * - サービスクラス(getMonthPeriod)からは、$preMonth(先月),$nextMonth(翌月),$targetMonth(当月)のデータをextract関数を使用し、取得
+     * - サービスクラス(getMonthlyRecords)から一日の出勤表示に必要なデータ(出勤時間、休憩時間、労働時間など)を取得
      *
      * @param Request $request アクセスした時の月のデータ
      * @param AttendanceService $attendanceService サービスクラス
-     * 
+     *
      * @return View
      */
     public function list(Request $request,AttendanceService $attendanceService)
@@ -130,6 +150,7 @@ class AttendanceController extends Controller
 
     /**
      * 半年間のデータ($halfYearWorkTime)を取得し、それを元に様々な記録を計算するレポート画面を表示
+     *
      * - コレクションメソッドmapを用いて、データ全体の1日毎の実労働時間(サービスクラス,calculateActualWorkTimeで実労働時間の計算を行い文字列で返す)を分単位に戻し、その1日のデータの日付、労働時間(:分)、残業時間(480分超の時のみ、480分の減算、それ以外は0分)、遅刻、残業、早退、長時間労働をしたかをbool値で判別。($proceseedAttendance)
      * - 半年間の１件ずつの出勤データからそれぞれ長時間労働、早退、遅刻がtrueの日の回数のカウント
      * - 半年間の１件ずつの出勤データから半年間全ての労働時間、残業時間の合計の計算しレポート画面で表示する形式にフォーマット(例:10h 10m)
@@ -138,7 +159,7 @@ class AttendanceController extends Controller
      * - それぞれの配列に月毎の労働時間、残業時間をコレクションメソッドsumで合計を出し、レポート画面での表示する形式にフォーマット
      *
      * @param AttendanceService $attendanceService サービスクラス 1日の実労働時間の計算
-     * 
+     *
      * @return View
      */
     public function report(AttendanceService $attendanceService) : View
