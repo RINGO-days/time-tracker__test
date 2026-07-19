@@ -92,8 +92,8 @@ class AdminController extends Controller
      */
     public function staffList() : View
     {
-        $users = User::all();
-        return view('admin.staffList',compact('users'),['nav' => 'admin']);
+        $staffs = User::where('is_admin',false)->get();
+        return view('admin.staffList',compact('staffs'),['nav' => 'admin']);
     }
 
     /**

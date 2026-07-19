@@ -3,6 +3,7 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Models\Rest;
 use App\Models\Attendance;
 use App\Models\Proposal;

@@ -16,12 +16,12 @@
             <th class="header-item">メールアドレス</th>
             <th class="header-item">月次勤怠</th>
         </tr>
-        @foreach($users as $user)
+        @foreach($staffs as $staff)
             <tr class="item-row">
-                <td class="item-cell">{{$user->name}}</td>
-                <td class="item-cell">{{$user->email}}</td>
+                <td class="item-cell">{{$staff->name}}</td>
+                <td class="item-cell">{{$staff->email}}</td>
                 <td class="item-cell">
-                    <a class="detail-link" href="/admin/attendance/staff/{{$user->id}}">詳細</a>
+                    <a class="detail-link" href="/admin/attendance/staff/{{$staff->id}}">詳細</a>
                 </td>
             </tr>
         @endforeach
