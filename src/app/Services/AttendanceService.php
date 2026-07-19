@@ -207,20 +207,7 @@ class AttendanceService
             'leave_time' => $request->leave,
         ];
 
-        $proposal_rest = collect($request->rest)
-                ->filter(function ($rest){
-                    return !empty($rest['rest_start']);
-                })
-                ->map(function ($rest){
-                    return [
-                        'rest_id' => $rest['rest_id'] ?? null,
-                        'rest_start' => $rest['rest_start'],
-                        'rest_end' => $rest['rest_end'],
-                    ];
-                })
-                ->all();
-
-        return DB::transaction(function () use ($proposal_attendance, $proposal_rest, $request, $user){
+        return DB::transaction(function () use ($proposal_attendance, $request, $user){
             $proposal = Proposal::create([
                 'user_id' => $user->id,
                 'target_date' => $request->date,
@@ -230,7 +217,8 @@ class AttendanceService
             ]);
 
             if(auth()->user()->is_admin){
-                $attendance = Attendance::where('user_id',$proposal->user_id)
+                $attendance = Attendance::with('rests')
+                            ->where('user_id',$proposal->user_id)
                             ->where('attendance_date',$proposal->target_date)
                             ->first();
 
@@ -251,8 +239,14 @@ class AttendanceService
                     ]);
                 }
 
-                if($proposal_rest){
-                    foreach($proposal_rest as $restData){
+                $proposal_rests = $request->rest;
+                if($proposal_rests){
+                    foreach($proposal_rests as $restData){
+                        if(!empty($restData['rest_id']) && empty($restData['rest_start'])){
+                            $attendance->rests()
+                                ->where('id',$restData['rest_id'])
+                                ->delete();
+                        }
                         if(empty($restData['rest_start'])){
                             continue;
                         }
