@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use App\Models\Rest;
 use App\Models\Attendance;
 use App\Models\Proposal;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class AttendanceService
@@ -199,7 +200,7 @@ class AttendanceService
      *
      * @return Proposal $proposal 作成された修正申請データ
      */
-    public function createAttendanceDetailProposal(Request $request,User $user) : Proposal
+    public function createAttendanceDetailProposal(Request $request, User $user) : Proposal
     {
         $proposal_attendance = [
             'attendance_time' => $request->attendance,

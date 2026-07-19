@@ -157,14 +157,25 @@ class attendanceDetailProposeTest extends TestCase
             'remarks' => 'テスト',
             'date' => $attendance->attendance_date
         ];
+
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
         $response->assertStatus(200);
+
+        $proposal = Proposal::where('user_id',$user->id)
+                    ->first();
+        $this->assertEquals('テスト', $proposal->remarks);
+        $this->assertEquals(1, $proposal->status);
+
+        $this->assertEquals('09:00', $proposal->proposed_attendance['attendance_time']);
+        $this->assertEquals('18:00', $proposal->proposed_attendance['leave_time']);
+
+        $proposedRestData = current($proposal->proposed_rest);
+        $this->assertEquals('12:00', $proposedRestData['rest_start']);
+        $this->assertEquals('13:00', $proposedRestData['rest_end']);
 
         $adminUser = User::factory()->create([
             'is_admin' => 1
         ]);
-        $proposal = Proposal::where('attendance_id',$attendance->id)
-                    ->first();
 
         $response = $this->actingAs($adminUser)->get('/admin/stamp_correction_request/approve/'.$proposal->id);
         $response->assertStatus(200);
@@ -242,7 +253,7 @@ class attendanceDetailProposeTest extends TestCase
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
         $response->assertStatus(200);
 
-        $proposal = Proposal::where('attendance_id',$attendance->id)
+        $proposal = Proposal::where('user_id',$user->id)
                     ->first();
         $proposal->update([
             'status' => 2
@@ -281,7 +292,7 @@ class attendanceDetailProposeTest extends TestCase
         $response = $this->actingAs($user)->post('/detail/propose/'.$attendance->id,$formData);
         $response->assertStatus(200);
 
-        $proposal = Proposal::where('attendance_id',$attendance->id)
+        $proposal = Proposal::where('user_id',$user->id)
                     ->first();
 
         $response = $this->get('/stamp_correction_request/list?tab=approved');
