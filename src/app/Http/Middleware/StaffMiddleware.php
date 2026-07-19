@@ -10,7 +10,8 @@ class StaffMiddleware
 {
     /**
      * Handle an incoming request.
-     *
+     * **追加機能**
+     * 管理者がスタッフ用のページを閲覧しようとした際、メッセージと共に日時勤怠リストにリダイレクトされる
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse

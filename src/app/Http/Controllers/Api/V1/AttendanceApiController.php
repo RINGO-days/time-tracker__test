@@ -20,7 +20,22 @@ use App\Policies\AttendanceRecordPolicy;
 class AttendanceApiController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * 勤怠記録の一覧を取得
+     * 検索、ページネーション付きAPI
+     *
+     * - 送られてきたクエリパラメータに応じて勤怠データを絞り込む
+     * - with('user','rests')により、関連するユーザー情報、休憩データも同時に取得
+     * - リソースクラスにより整形されたデータをステータスコード200(ok)で表示
+     * - 該当データがないときはステータスコード404(notFound)を表示
+     *
+     * 【検索クエリパラメータ】
+     * - user_id : 特定のスタッフのIDで絞り込み
+     * - date : 特定の日付(YYYY-MM-DD)で絞り込み
+     * - month : 特定の月(YYYY-MM)で絞り込み
+     * - page : ページ番号の指定
+     * - per_page : １ページあたりの件数表示(デフォルト20、最大100)
+     *
+     * @param IndexAttendanceRecordRequest $request バリデーション済みのリクエスト
      *
      * @return \Illuminate\Http\Response
      */
@@ -59,9 +74,13 @@ class AttendanceApiController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 勤怠を新規登録する
      *
-     * @param  \Illuminate\Http\Request  $request
+     * - バリデーション済みのデータを元にログインユーザーの新しい勤怠レコードを作成
+     * - 作成後の勤怠データからユーザー情報、休憩データをloadする
+     * - リソースクラスによって整形されたデータをステータスコード201(created)で表示
+
+     * @param  StoreAttendanceRecordReques $request リクエストフォルダによるバリデーション
      * @return \Illuminate\Http\Response
      */
     public function store(StoreAttendanceRecordRequest $request)
@@ -85,9 +104,14 @@ class AttendanceApiController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * 指定された勤怠レコードの表示
      *
-     * @param  int  $id
+     * - 動的セグメントにより勤怠IDのモデル情報を取得(ルートモデルバインディング)
+     * - 取得した勤怠データに関連するユーザー情報と休憩データも同時にloadする
+     * - リソースクラスによって整形されたデータをステータスコード200(ok)で表示
+     * - 該当データがないときはステータスコード404(notFound)を表示
+     *
+     * @param  int  $attendanceRecord 勤怠IDのモデル情報を取得
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request,Attendance $attendanceRecord)
@@ -108,10 +132,16 @@ class AttendanceApiController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * 指定した勤怠IDのデータの更新
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * - 動的セグメントにより勤怠IDのモデル情報を取得(ルートモデルバインディング)
+     * - ポリシーをチェックした上でバリデーション済みのデータで上書き更新する
+     * - 更新した勤怠情報に関連するユーザー情報、休憩データを同時にloadする
+     * - リソースクラスによって整形されたデータをステータスコード200(ok)で表示
+     * - 該当データがないときはステータスコード404(notFound)を表示
+     *
+     * @param  UpdateAttendanceRecordRequest $request リクエストフォルダによるバリデーション
+     * @param  int  $attendanceRecord 勤怠IDのモデル情報を取得
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateAttendanceRecordRequest $request,Attendance $attendanceRecord)
@@ -137,9 +167,13 @@ class AttendanceApiController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 指定した勤怠情報を削除
      *
-     * @param  int  $id
+     * - 動的セグメントにより勤怠IDのモデル情報を取得(ルートモデルバインディング)
+     * - ポリシーをチェックした上で操作を実行
+     * - 指定データを削除し、ステータスコード204(noContent)を表示
+     *
+     * @param  int  $attendanceRecord 勤怠IDのモデル情報を取得
      * @return \Illuminate\Http\Response
      */
     public function destroy(Attendance $attendanceRecord)

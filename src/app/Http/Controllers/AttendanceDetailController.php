@@ -10,6 +10,7 @@ use App\Models\Proposal;
 use App\Http\Requests\ProposalRequest;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Services\AttendanceService;
 
 
 class AttendanceDetailController extends Controller
@@ -82,84 +83,29 @@ class AttendanceDetailController extends Controller
 
     /**
      * 勤怠を修正申請する詳細画面から修正ボタンを押したときのアクション
+     * (スタッフと管理者で共通のアクション)
      *
      * - 動的セグメントから出勤データを取得
-     * - 送られてきた出勤時間と退勤時間はjson形式で保存
-     * - 同じく送られてきた休憩データは複数個ある可能性があるため、foreachで１件ずつ、配列形式で保存する
-     * (後に休憩データを削除するロジックがあるためrest_idも同時に保存する)
-     * - 送られてきたデータ全てをproposalsテーブルに保存する
+     * - 出勤データに紐付いているユーザー情報をサービスクラスに渡す。
+     * - サービスクラスからproposalsテーブルに保存した情報がリターンされる。
      *
-     * 【管理者用のロジック】
-     * - 先ほどproposalsテーブルに保存したデータをattendancesテーブル、restsテーブルにアップデートする
-     * **追加機能**
-     * - すでに休憩データのデフォルト値があった状態で、休憩開始時間と休憩終了時間を空欄にして送られてきた場合、送られてきたrest_idに該当する休憩データを削除する
+     * 管理者は日次勤怠画面にリダイレクト、スタッフは修正申請済み画面を表示
+     * 
+     * @param ProposalRequest $request バリデーション済みの勤怠修正データ
+     * @param AttendanceService $attendanceService リクエストデータをproposalsテーブルに保存するサービス
+     * @param int $id 勤怠ID
+     * 
+     * @return RedirectResponse 管理者の場合
+     * @return View スタッフの場合
      */
-    public function propose(ProposalRequest $request,$id) : RedirectResponse | View
+    public function propose(ProposalRequest $request,AttendanceService $attendanceService,$id) : RedirectResponse | View
     {
-        $attendance = Attendance::findOrFail($id);
+        $attendance = Attendance::with('user')->findOrFail($id);
+        $user = $attendance->user;
 
-        $proposal_attendance = [
-            'attendance_time' => $request->attendance,
-            'leave_time' => $request->leave,
-        ];
-        $proposal_rests = $request->rest;
-        if($proposal_rests){
-            foreach($proposal_rests as $key => $rest){
-                if(!empty($rest['rest_id']) || !empty($rest['rest_start'])){
-                    $proposal_rest[] = [
-                        'rest_id' => $rest['rest_id'] ?? null,
-                        'rest_start' => $rest['rest_start'] ?? null,
-                        'rest_end' => $rest['rest_end'] ?? null
-                    ];
-                }
-            }
-        }
-
-        $proposal = Proposal::create([
-            'user_id' => $attendance->user_id,
-            'attendance_id' => $attendance->id,
-            'target_date' => $request->date,
-            'proposed_attendance' => $proposal_attendance,
-            'proposed_rest' => $proposal_rest ?? null,
-            'remarks' => $request->remarks,
-        ]);
+        $proposal = $attendanceService->createAttendanceDetailProposal($request,$user);
 
         if(auth()->user()->is_admin){
-            $attendance->update([
-                'attendance_time' => $proposal_attendance['attendance_time'],
-                'leave_time' => $proposal_attendance['leave_time'],
-            ]);
-
-            if($proposal_rests){
-                foreach($proposal_rests as $restData){
-                    if (!empty($restData['rest_id']) && empty($restData['rest_start'])) {
-                        Rest::where('id', $restData['rest_id'])->delete();
-                        continue;
-                    }
-
-                    if (empty($restData['rest_start'])) {
-                        continue;
-                    }
-
-                    if(!empty($restData['rest_id'])){
-                        Rest::where('id',$restData['rest_id'])
-                            ->update([
-                                'rest_start' => $restData['rest_start'],
-                                'rest_end' => $restData['rest_end'],
-                            ]);
-                    }else{
-                        Rest::create([
-                            'attendance_id' => $attendance->id,
-                            'rest_start' => $restData['rest_start'],
-                            'rest_end' => $restData['rest_end'],
-                        ]);
-                    }
-                }
-            }
-            $proposal->update([
-                'status' => 2
-            ]);
-
             return redirect("/admin/attendance/list");
         }
 
@@ -170,88 +116,43 @@ class AttendanceDetailController extends Controller
      * **追加機能**
      * 新規で勤怠を作成するためのアクション(スタッフ、管理者共通)
      * 
-     * - クエリパラメータから新規登録するスタッフのIDを取得
-     * - 
+     * - 基本機能は上記のproposeと同じ
+     * - 動的セグメントから直接ユーザーIDを取得し、サービスクラスに渡している
+     * 
+     * 管理者は日次勤怠画面にリダイレクト、スタッフは修正申請済み画面を表示
+     * 
+     * @param ProposalRequest $request バリデーション済みの勤怠修正データ
+     * @param AttendanceService $attendanceService リクエストデータをproposalsテーブルに保存するサービス
+     * @param int $id ユーザーID
+     * 
+     * @return RedirectResponse 管理者の場合
+     * @return View スタッフの場合
      */
-    public function newDetailPropose(ProposalRequest $request,$id) : RedirectResponse | View
+    public function newDetailPropose(ProposalRequest $request,AttendanceService $attendanceService,$id) : RedirectResponse | View
     {
         $user = User::findOrFail($id);
-        $proposal_attendance = [
-            'attendance_time' => $request->attendance,
-            'leave_time' => $request->leave,
-        ];
 
-        $proposal_rest = [];
-        $proposal_rests = $request->rest;
-        if($proposal_rests){
-            foreach($proposal_rests as $key => $rest){
-                if(!empty($rest['rest_start'])){
-                    $proposal_rest[] = [
-                        'rest_id' => $rest['rest_id'] ?? null,
-                        'rest_start' => $rest['rest_start'],
-                        'rest_end' => $rest['rest_end'],
-                    ];
-                };
-            };
-        };
-        $proposal = Proposal::create([
-            'user_id' => $user->id,
-            'target_date' => $request->date,
-            'proposed_attendance' => $proposal_attendance ?? null,
-            'proposed_rest' => $proposal_rest ?? null,
-            'remarks' => $request->remarks,
-        ]);
+        $proposal = $attendanceService->createAttendanceDetailProposal($request,$user);
 
         if(auth()->user()->is_admin){
-            $attendance = Attendance::where('user_id',$proposal->user_id)
-                        ->where('attendance_date',$proposal->target_date)
-                        ->first();
-
-            if($attendance){
-                $attendance->update([
-                    'attendance_time' => $proposal_attendance['attendance_time'],
-                    'leave_time' => $proposal_attendance['leave_time'],
-                ]);
-            }else{
-                $attendance = Attendance::create([
-                    'user_id' => $proposal->user_id,
-                    'attendance_date' => $proposal->target_date,
-                    'attendance_time' => $proposal_attendance['attendance_time'],
-                    'leave_time' => $proposal_attendance['leave_time'],
-                ]);
-                $proposal->update([
-                    'attendance_id' => $attendance->id,
-                    'status' => 2
-                ]);
-            }
-
-            if($proposal_rests){
-                foreach($proposal_rests as $restData){
-                    if(empty($restData['rest_start'])){
-                        continue;
-                    }
-
-                    if(!empty($restData['rest_id'])){
-                        Rest::where('id',$restData['rest_id'])
-                            ->update([
-                                'rest_start' => $restData['rest_start'],
-                                'rest_end' => $restData['rest_end'],
-                            ]);
-                    }else{
-                        Rest::create([
-                            'attendance_id' => $attendance->id,
-                            'rest_start' => $restData['rest_start'],
-                            'rest_end' => $restData['rest_end'],
-                        ]);
-                    }
-                }
-            }
             return redirect('/admin/attendance/list');
         }
-
         return view('staff.detailConfirm',compact('proposal'));
     }
 
+    /**
+     * 承認待ちもしくは承認済みの勤怠のリスト画面(クエリパラメータでタブの切り替え)
+     * 
+     * - スタッフの場合、自分のIDのみを取得
+     * - クエリパラメータtabがapprovedの時、proposalsテーブルのステータスが２(承認済み)のデータを取得
+     * - それ以外は承認待ちのデータを取得
+     * 
+     * スタッフと管理者は別のヘッダーを使用しているため、Viewファイルは同じだが、管理者の場合ヘッダー用の変数をViewに渡している。
+     * 
+     * @param Request $request クエリパラメータで承認待ちと承認済みのタブの切り替え
+     * 
+     * @return View
+     */
     public function applyList(Request $request) : View
     {
         $query = Proposal::with('user','attendance');
@@ -275,6 +176,17 @@ class AttendanceDetailController extends Controller
         return view('staff.applyList',compact('proposals'));
     }
 
+    /**
+     * スタッフが勤怠詳細画面から修正リクエストを送った後に表示される画面
+     * 修正できませんのコメントとともにユーザーが修正申請した入力データが表示される
+     * 
+     * - 動的セグメントから修正申請データのIDを取得
+     * - それらをViewファイルに渡して、画面表示する
+     * 
+     * @param int $id 修正申請データのID
+     * 
+     * @return View
+     */
     public function detailConfirmShow($id) : View
     {
         $proposal = Proposal::with(['user','attendance'])->findOrFail($id);

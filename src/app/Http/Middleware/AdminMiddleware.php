@@ -10,6 +10,8 @@ class AdminMiddleware
 {
     /**
      * Handle an incoming request.
+     * **追加機能**
+     * スタッフが管理者用のページを閲覧しようとした際、メッセージと共に最初の打刻画面に戻す
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next

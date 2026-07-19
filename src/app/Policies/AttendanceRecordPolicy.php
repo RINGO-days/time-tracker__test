@@ -55,7 +55,10 @@ class AttendanceRecordPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * 勤怠情報の更新の権限の判別
+     *
+     * 指定した勤怠に紐付いているuser_idとログイン中のユーザーIDが一致した時、
+     * またはログイン中のユーザーが管理者だった場合のみ更新が可能となる
      *
      * @param  \App\Models\User  $user
      * @param  \App\Models\Attendance  $attendance
@@ -69,10 +72,13 @@ class AttendanceRecordPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * 勤怠情報の削除の権限の判別
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Attendance  $attendance
+     * 指定した勤怠に紐付いているuser_idとログイン中のユーザーIDが一致した時、
+     * またはログイン中のユーザーが管理者だった場合のみ削除が可能となる
+     *
+     * @param  \App\Models\User  $user ログイン中のユーザーモデル
+     * @param  \App\Models\Attendance  $attendance 指定した勤怠のモデル
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, Attendance $attendanceRecord) : Response
@@ -84,8 +90,8 @@ class AttendanceRecordPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Attendance  $attendance
+     * @param  \App\Models\User  $user ログイン中のユーザーモデル
+     * @param  \App\Models\Attendance  $attendance 指定した勤怠のモデル
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function restore(User $user, Attendance $attendance)
