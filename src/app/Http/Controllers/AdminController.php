@@ -201,7 +201,7 @@ class AdminController extends Controller
     {
 
         $proposal = Proposal::with('attendance.rests')
-        ->find($attendance_correct_request_id);
+        ->findOrFail($attendance_correct_request_id);
 
         DB::transaction(function () use ($proposal){
             $proposal->attendance->update([
