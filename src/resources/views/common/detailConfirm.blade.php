@@ -61,10 +61,10 @@
             </tr>
         </table>
         <div class="comment__inner">
-            @if($proposal->status === 1)
-                <p class="comment">*申請中のため修正できません</p>
-            @else
+            @if($proposal->status === 2)
                 <p class="comment">承認済みです</p>
+            @else
+                <p class="comment">*申請中のため修正できません</p>
             @endif
         </div>
 @endsection
