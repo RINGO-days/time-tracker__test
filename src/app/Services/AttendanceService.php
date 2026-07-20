@@ -200,17 +200,37 @@ class AttendanceService
      */
     public function createAttendanceDetailProposal(Request $request, User $user) : Proposal
     {
+        $attendance = Attendance::with('rests','proposals')
+            ->where('user_id',$user->id)
+            ->where('attendance_date',$request->date)
+            ->first();
         $proposal_attendance = [
             'attendance_time' => $request->attendance,
             'leave_time' => $request->leave,
         ];
-
-        return DB::transaction(function () use ($proposal_attendance, $request, $user){
+        $proposal_rests = [];
+        if ($request->rest){
+            foreach ($request->rest as $key => $rest) {
+                if($key === 'new' && empty($rest['rest_start'])){
+                    continue;
+                    // 新規休憩に何も入力がなかった場合、処理をスキップすることで不要なデータを保存させない
+                }
+                if (!empty($rest['rest_id']) || $key === 'new') {
+                    $proposal_rests[] = [
+                        'rest_id' => $rest['rest_id'] ?? null,
+                        'rest_start' => $rest['rest_start'] ?? null,
+                        'rest_end' => $rest['rest_end'] ?? null,
+                    ];
+                }
+            }
+        }
+        return DB::transaction(function () use ($attendance, $proposal_attendance, $proposal_rests,$request, $user){
             $proposal = Proposal::create([
                 'user_id' => $user->id,
+                'attendance_id' => $attendance->id ?? null,
                 'target_date' => $request->date,
                 'proposed_attendance' => $proposal_attendance ?? null,
-                'proposed_rest' => $proposal_rest ?? null,
+                'proposed_rest' => $proposal_rests ?? null,
                 'remarks' => $request->remarks,
             ]);
 

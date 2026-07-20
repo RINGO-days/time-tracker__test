@@ -35,9 +35,10 @@ class AttendanceDetailController extends Controller
         $proposal = Proposal::with('user','attendance')
                     ->where('user_id',auth()->id())
                     ->where('attendance_id',$attendance->id)
+                    ->latest()
                     ->first();
         if($proposal && $proposal->status === 1){
-            return view('staff.detailConfirm',compact('proposal'));
+            return view('common.detailConfirm',compact('proposal'));
         }
 
         $details = [
@@ -112,7 +113,7 @@ class AttendanceDetailController extends Controller
             return redirect("/admin/attendance/list");
         }
 
-        return view('staff.detailConfirm',compact('proposal'));
+        return view('common.detailConfirm',compact('proposal'));
     }
 
     /**
@@ -140,7 +141,7 @@ class AttendanceDetailController extends Controller
         if(auth()->user()->is_admin){
             return redirect('/admin/attendance/list');
         }
-        return view('staff.detailConfirm',compact('proposal'));
+        return view('common.detailConfirm',compact('proposal'));
     }
 
     /**
@@ -194,6 +195,6 @@ class AttendanceDetailController extends Controller
     {
         $proposal = Proposal::with(['user','attendance'])->findOrFail($id);
 
-        return view('staff.detailConfirm',compact('proposal'));
+        return view('common.detailConfirm',compact('proposal'));
     }
 }

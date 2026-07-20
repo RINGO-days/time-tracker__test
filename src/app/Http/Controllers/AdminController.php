@@ -132,34 +132,45 @@ class AdminController extends Controller
     public function approve($attendance_correct_request_id) : RedirectResponse
     {
         $proposal = Proposal::with('attendance.rests')
-        ->findOrFail($attendance_correct_request_id);
+            ->findOrFail($attendance_correct_request_id);
 
         DB::transaction(function () use ($proposal){
-            $proposal->attendance->update([
-                'attendance_time' => $proposal->proposed_attendance['attendance_time'],
-                'leave_time' => $proposal->proposed_attendance['leave_time'],
-            ]);
-            $attendance = $proposal->attendance;
-            if($proposal->proposed_rest === null || empty($proposal->proposed_rest)){
-                $attendance->rests()->delete();
+            $attendance = $proposal->attendance
+                ?? Attendance::where('attendance_date', $proposal->target_date)
+                    ->where('user_id',$proposal->user_id)
+                    ->first();
+            if($attendance){
+                $attendance->update([
+                    'attendance_time' => $proposal->proposed_attendance['attendance_time'],
+                    'leave_time' => $proposal->proposed_attendance['leave_time'],
+                ]);
             }else{
-                foreach($proposal->proposed_rest ?? [] as $proposalRest){
-                    if (!empty($proposalRest['rest_id']) && empty($proposalRest['rest_start'])) {
-                        Rest::where('id', $proposalRest['rest_id'])->delete();
-                        continue;
-                    }
-                    if(!empty($proposalRest['rest_id'])){
-                        Rest::where('id',$proposalRest['rest_id'])
-                            ->update([
-                                'rest_start' => $proposalRest['rest_start'],
-                                'rest_end' => $proposalRest['rest_end'],
-                            ]);
-                    }else{
-                        $attendance->rests()->create([
+                $attendance = Attendance::create([
+                    'user_id' => $proposal->user_id,
+                    'attendance_date' => $proposal->target_date,
+                    'attendance_time' => $proposal->proposed_attendance['attendance_time'],
+                    'leave_time' => $proposal->proposed_attendance['leave_time'],
+                ]);
+                $proposal->update(['attendance_id' => $attendance->id]);
+            }
+
+            foreach($proposal->proposed_rest ?? [] as $proposalRest){
+                if (!empty($proposalRest['rest_id']) && empty($proposalRest['rest_start'])){
+                    Rest::where('id', $proposalRest['rest_id'])->delete();
+                    continue;
+                }
+
+                if(!empty($proposalRest['rest_id']) && !empty($proposalRest['rest_start'])){
+                    Rest::where('id',$proposalRest['rest_id'])
+                        ->update([
                             'rest_start' => $proposalRest['rest_start'],
                             'rest_end' => $proposalRest['rest_end'],
                         ]);
-                    }
+                }elseif(!empty($proposalRest['rest_start'])){
+                    $attendance->rests()->create([
+                        'rest_start' => $proposalRest['rest_start'],
+                        'rest_end' => $proposalRest['rest_end'],
+                    ]);
                 }
             }
             $proposal->update([
