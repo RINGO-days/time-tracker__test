@@ -1,6 +1,33 @@
+.message__box {
+    margin: 20px 0;
+    padding: 16px 20px;
+    background-color: #fff9db;
+    border-left: 4px solid #fcc419;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.message {
+    margin: 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight:700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.request-list__link {
+    color: #228be6;
+    font-weight: 600;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+    text-decoration: none;
+}
+.request-list__link:hover {
+    color: #1c7ed6;
+    text-decoration: underline;
+}
 .title {
     width: 60%;
-    margin: 90px auto 40px auto;
+    margin: 40px auto;
     position: relative;
     padding-left: 30px;
     font-size: 30px;

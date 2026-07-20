@@ -64,13 +64,6 @@ class Handler extends ExceptionHandler
                 ],404);
             }
         });
-        // $this->renderable(function (AccessDeniedHttpException $e, $request){
-        //     if($request->is('api/*')){
-        //         return response()->json([
-        //             'error' => 'この操作を実行する権限がありません。'
-        //         ],403);
-        //     }
-        // });
         $this->renderable(function (AuthorizationException $e, $request){
             if($request->is('api/*')){
                 return response()->json([
@@ -78,12 +71,5 @@ class Handler extends ExceptionHandler
                 ],403);
             }
         });
-        // $this->renderable(function (NotFoundHttpException $e, $request){
-        //     if($request->is('api/*')){
-        //         return response()->json([
-        //             'error' => 'エンドポイントが違います。'
-        //         ],404);
-        //     }
-        // });
     }
 }

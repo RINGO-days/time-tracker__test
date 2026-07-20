@@ -6,7 +6,6 @@
                         ->latest()
                         ->value('status');
 @endphp
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>

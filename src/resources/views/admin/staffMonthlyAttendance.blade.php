@@ -14,12 +14,12 @@
             <span class="flash-message">{{ session('message') }}</span>
         @endif
     </div>
-    <h1 class="title">{{$user->name}}の月次勤怠</h1>
+    <h1 class="title">{{$user->name}}さんの勤怠</h1>
     <div class="pagenation__box">
         <div class="link__box">
             <a class="page-link" href="?month={{$preMonth}}">
-                <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="先月へ">
-                <span>先月</span>
+                <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="前月">
+                <span>前月</span>
             </a>
         </div>
             <form action="/admin/attendance/staff/{{$user->id}}" method="GET">
@@ -32,7 +32,7 @@
         <div class="link__box">
             <a class="page-link" href="?month={{$nextMonth}}">
                 <span>翌月</span>
-                <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月へ">
+                <img class="arrow-img--inversion" src="{{asset('img/矢印.png')}}" alt="翌月">
             </a>
         </div>
     </div>
@@ -56,7 +56,7 @@
                     @if($record['attendance_id'])
                         <a class="detail-link" href="/admin/attendance/{{$record['attendance_id']}}">詳細</a>
                     @else
-                        <span class="">詳細</span>
+                        <a class="detail-link" href="/admin/attendance/newDetail/staff/{{$user->id}}?date={{$record['date']}}">詳細</a>
                     @endif
                 </td>
             </tr>

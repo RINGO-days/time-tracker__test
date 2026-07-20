@@ -4,17 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class StaffMiddleware
 {
     /**
      * Handle an incoming request.
-     *
+     * **追加機能**
+     * 管理者がスタッフ用のページを閲覧しようとした際、メッセージと共に日時勤怠リストにリダイレクトされる
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next) : Response
     {
         if(auth()->user()->is_admin){
             return redirect('/admin/attendance/list')->with('message','一般スタッフ用ページの閲覧権限はありません。');

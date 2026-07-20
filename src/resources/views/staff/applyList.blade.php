@@ -37,12 +37,9 @@
                     @case(2)
                         <td class="table-item">承認済み</td>
                         @break
-                    @case(3)
-                        <td class="table-item">棄却</td>
-                        @break
                 @endswitch
                 <td class="table-item">{{$proposal->user->name}}</td>
-                <td class="table-item">{{date('Y/m/d',strtotime($proposal->attendance->attendance_date))}}</td>
+                <td class="table-item">{{date('Y/m/d',strtotime($proposal->target_date))}}</td>
                 <td class="table-item">{{$proposal->remarks}}</td>
                 <td class="table-item">{{$proposal->updated_at->format('Y/m/d')}}</td>
                 <td class="table-item">

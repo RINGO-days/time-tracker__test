@@ -12,7 +12,7 @@ class StoreAttendanceRecordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize() : bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class StoreAttendanceRecordRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             'date' => ['required','date_format:Y-m-d',
@@ -30,7 +30,7 @@ class StoreAttendanceRecordRequest extends FormRequest
                     return $query->where('user_id',$this->user()->id);
                 })],
             'clock_in' => ['required','date_format:H:i:s'],
-            'clock_out' => ['nullable','date_format:H:i:s'],
+            'clock_out' => ['nullable','date_format:H:i:s','after:clock_in'],
             'comment' => ['nullable','max:225']
         ];
 
@@ -41,7 +41,7 @@ class StoreAttendanceRecordRequest extends FormRequest
         }
     }
 
-    public function messages()
+    public function messages() : array
     {
         return [
             'date.required' => '勤怠日は必須です。',

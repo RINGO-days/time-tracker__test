@@ -73,6 +73,9 @@
     line-height: 3;
     border-bottom: #e1e1e1 2px solid;
 }
+.item-raw:hover{
+    background-color: #f0f0f0;
+}
 .table-item:first-child{
     text-align: center;
 }

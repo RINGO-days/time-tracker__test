@@ -107,7 +107,7 @@
 }
 .header-item.name:first-child,.item-cell.name:first-child{
     text-align: center;
-    padding-left: 0px;
+    padding-left: 5px;
     padding-right: 30px;
     white-space: nowrap;
 }
@@ -121,6 +121,9 @@
 .item-row{
     background-color: #ffffff;
     border-bottom: #e1e1e1 2px solid;
+}
+.item-row:hover{
+    background-color:#f0f0f0;
 }
 .detail-link{
     border: none;

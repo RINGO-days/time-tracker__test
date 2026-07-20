@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Attendance extends Model
 {
@@ -15,6 +17,7 @@ class Attendance extends Model
         'attendance_date',
         'attendance_time',
         'leave_time',
+        'comment'
     ];
 
     protected $casts = [
@@ -22,17 +25,17 @@ class Attendance extends Model
         'leave_time' => 'datetime',
     ];
 
-    public function user()
+    public function user() : BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function rests()
+    public function rests() : HasMany
     {
         return $this->hasMany(Rest::class);
     }
 
-    public function proposals()
+    public function proposals() : HasMany
     {
         return $this->hasMany(Proposal::class);
     }

@@ -19,10 +19,10 @@
         <div class="link__box">
             <a class="page-link" href="?day={{$preDay}}">
                 <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="前日">
-                <span>先日</span>
+                <span>前日</span>
             </a>
         </div>
-            <form action="/admin/dailyAttendance" method="GET">
+            <form action="/admin/attendance/list" method="GET">
                 <label class="calender-label" for="date-input">
                     <img class="calendar-icon" src="{{asset('img/カレンダー.png')}}" alt="日時選択">
                     <span class="date-text">{{\Carbon\Carbon::parse($targetDay)->format('Y/m/d')}}</span>

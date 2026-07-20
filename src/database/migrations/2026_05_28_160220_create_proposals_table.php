@@ -16,7 +16,8 @@ class CreateProposalsTable extends Migration
         Schema::create('proposals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('attendance_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->date('target_date');
             $table->json('proposed_attendance')->nullable();
             $table->json('proposed_rest')->nullable();
             $table->text('remarks');

@@ -124,14 +124,21 @@ class restTest extends TestCase
         $response = $this->actingAs($user)->get('/');
         $response->assertStatus(200);
 
-        $response = $this->post('rest');
+        $response = $this->post('/rest');
         $response->assertStatus(302);
+        $this->assertDatabaseHas('rests', [
+            'rest_start' => now()->format('H:i:s')
+        ]);
 
         $response = $this->post('/rest');
         $response->assertStatus(302);
+        $this->assertDatabaseHas('rests', [
+            'rest_end' => now()->format('H:i:s')
+        ]);
+
 
         $response = $this->get('/list');
         $response->assertStatus(200);
-        $response->assertSee(now()->format('H:i'));
+        $response->assertSee('00:00');
     }
 }

@@ -29,6 +29,7 @@ class editDetailTest extends TestCase
         $proposal = Proposal::create([
             'user_id' => $staff1->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposal_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',
@@ -48,9 +49,10 @@ class editDetailTest extends TestCase
             'user_id' => $staff2->id,
             'attendance_date' => now()->toDateString(),
         ]);
-                $proposal = Proposal::create([
+        $proposal = Proposal::create([
             'user_id' => $staff2->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposal_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',
@@ -91,6 +93,7 @@ class editDetailTest extends TestCase
         $proposal = Proposal::create([
             'user_id' => $staff1->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposed_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',
@@ -112,9 +115,10 @@ class editDetailTest extends TestCase
             'user_id' => $staff2->id,
             'attendance_date' => now()->toDateString(),
         ]);
-                $proposal = Proposal::create([
+        $proposal = Proposal::create([
             'user_id' => $staff2->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposed_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',
@@ -159,6 +163,7 @@ class editDetailTest extends TestCase
         $proposal = Proposal::create([
             'user_id' => $staff->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposed_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',
@@ -199,6 +204,7 @@ class editDetailTest extends TestCase
         $proposal = Proposal::create([
             'user_id' => $staff->id,
             'attendance_id' => $attendance->id,
+            'target_date' => $attendance->attendance_date,
             'proposed_attendance' => [
                 'attendance_time' => '10:00',
                 'leave_time' => '20:00',

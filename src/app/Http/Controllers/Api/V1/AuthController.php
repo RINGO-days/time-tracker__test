@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function ApiLogin(LoginRequest $request)
     {
         $user = User::where('email',$request->email)
-                ->first();
+            ->first();
 
         if(!$user || !Hash::check($request->password,$user->password)){
             return response()->json([

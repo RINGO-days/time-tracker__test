@@ -21,7 +21,7 @@ class ProposalRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules() : array
     {
         return [
             'attendance' => ['required','date_format:H:i'],
@@ -33,20 +33,20 @@ class ProposalRequest extends FormRequest
             'rest.*.rest_start' => ['nullable','date_format:H:i','required_with:rest.*.rest_end','after:attendance','before:leave'],
             'rest.*.rest_end' => ['nullable','date_format:H:i','required_with:rest.*.rest_start','after:rest.*.rest_start','before:leave'],
 
-            'rest.new.rest_start' => ['nullable','date_format:H:i','required_with:rest.new.rest_end','before:rest.new.rest_end'],
-            'rest.new.rest_end' => ['nullable','date_format:H:i','required_with:rest.new.rest_start','after:rest.new.rest_start'],
+            'rest.new.rest_start' => ['nullable','date_format:H:i','required_with:rest.new.rest_end','after:attendance','before:leave'],
+            'rest.new.rest_end' => ['nullable','date_format:H:i','required_with:rest.new.rest_start','after:rest.new.rest_start','before:leave'],
 
         ];
     }
-    
-    public function messages()
+
+    public function messages() : array
     {
         return [
             'attendance.required' => '出勤時間を入力してください。',
-            'attendance.date_format' => '時:分の形式で入力してください。',
+            'attendance.date_format' => 'HH:MMの形式で入力してください。',
 
             'leave.required' => '退勤時間を入力してください。',
-            'leave.date_format' => '時:分の形式で入力してください。',
+            'leave.date_format' => 'HH:MMの形式で入力してください。',
             'leave.after' => '出勤時間もしくは退勤時間が不適切な値です。',
 
             'remarks.required' => '備考を記入してください。',
@@ -64,10 +64,12 @@ class ProposalRequest extends FormRequest
 
             'rest.new.rest_start.date_format' => '時:分の形式で入力してください。',
             'rest.new.rest_start.required_with' => '休憩開始時間を入力してください。',
-            'rest.new.rest_start.after' => '休憩時間もしくは退勤時間が不適切な値です。',
+            'rest.new.rest_start.after' => '休憩時間が不適切な値です。',
+            'rest.new.rest_start.before' => '休憩時間が不適切な値です。',
 
             'rest.new.rest_end.date_format' => '時:分の形式で入力してください。',
             'rest.new.rest_end.required_with' => '休憩開始時間を入力してください。',
+            'rest.new.rest_end.after' => '休憩時間が不適切な値です。',
             'rest.new.rest_end.before' => '休憩時間もしくは退勤時間が不適切な値です。',
 
         ];
