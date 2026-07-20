@@ -49,6 +49,9 @@
     background-color: #ffffff;
     border-bottom: #e1e1e1 2px solid;
 }
+.item-row:hover {
+    background-color: #f0f0f0;
+}
 .detail-link {
     border: none;
     background-color: transparent;
@@ -58,6 +61,7 @@
     color: #000000;
     padding: 5px 10px;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 .detail-link:hover {
     color: #FF7F50;

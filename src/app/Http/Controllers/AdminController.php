@@ -71,7 +71,7 @@ class AdminController extends Controller
             ->latest()
             ->first();
         if($proposal && $proposal->status === 1){
-            return view('common.confirmDetail',compact('proposal'),['nav' => 'admin']);
+            return view('common.detailConfirm',compact('proposal'),['nav' => 'admin']);
         }
 
         return view('common.detail',compact('details','rests'),['nav' => 'admin']);

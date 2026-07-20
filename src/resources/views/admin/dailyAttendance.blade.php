@@ -19,7 +19,7 @@
         <div class="link__box">
             <a class="page-link" href="?day={{$preDay}}">
                 <img class="arrow-img" src="{{asset('img/矢印.png')}}" alt="前日">
-                <span>先日</span>
+                <span>前日</span>
             </a>
         </div>
             <form action="/admin/attendance/list" method="GET">
