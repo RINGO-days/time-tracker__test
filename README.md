@@ -141,6 +141,9 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 ### 📃ER図
 ![ER図](ER.png)
 
+### 月次勤怠のCSVファイル出力
+管理者画面の指定のスタッフの月次勤怠リストから開いているページの月の勤怠をCSVファイルにて出力
+
 ### API
 - ルート設定はapiResourceを用いて、5エンドポイントを一括定義(index,store,show,update,desroy)<br>
 - app/Http/Controllers/Api/V1/AttendanceApiController.phpを作成し、各アクションの定義<br>
