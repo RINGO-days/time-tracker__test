@@ -43,10 +43,10 @@ class ProposalRequest extends FormRequest
     {
         return [
             'attendance.required' => '出勤時間を入力してください。',
-            'attendance.date_format' => '時:分の形式で入力してください。',
+            'attendance.date_format' => 'HH:MMの形式で入力してください。',
 
             'leave.required' => '退勤時間を入力してください。',
-            'leave.date_format' => '時:分の形式で入力してください。',
+            'leave.date_format' => 'HH:MMの形式で入力してください。',
             'leave.after' => '出勤時間もしくは退勤時間が不適切な値です。',
 
             'remarks.required' => '備考を記入してください。',
