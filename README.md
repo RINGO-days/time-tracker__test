@@ -80,15 +80,12 @@ php artisan migrate:fresh --seed
 ### メール認証
 mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 メース認証画面への遷移画面にて、メール再送信機能、および再送信時にメッセージを表示
-
 ### ダミーデータ
-
 | 名前 | メールアドレス | パスワード | 役割 |
 | :-- | :-- | :-- | :-- |
 | ユーザー1（一般） | `user1@example.com` | `password` | 過去５ヶ月の15日分の通常勤怠データ(09:00 ~ 18:00 休憩 12:00~13:00)、及び当月のみ通常勤怠が10日、残業(09:00~20:00)3日、遅刻(09:30~18:00)2日、早退(09:00~17:00)1日、長時間労働(09:00~21:00)1日 の17日分のデータがあるユーザー |
 | ユーザー2（一般） | `user2@example.com` | `password` | 勤怠が存在しないユーザー |
 | ユーザー3（管理者） | `user3@example.com` | `password` | 管理者ユーザー |
-
 ### テーブル仕様
 #### **usersテーブル**
 | カラム名 | 型 | primary key | unique key | not null | foreign key |
@@ -137,13 +134,10 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 | status | tinyint |  |  | ○ |  |
 | created_at | timestamp |  |  | ○ |  |
 | updated_at | timestamp |  |  | ○ |  |
-
 ### 📃ER図
 ![ER図](ER.png)
-
 ### 月次勤怠のCSVファイル出力
 管理者画面の指定のスタッフの月次勤怠リストから開いているページの月の勤怠をCSVファイルにて出力
-
 ### API
 - ルート設定はapiResourceを用いて、5エンドポイントを一括定義(index,store,show,update,desroy)<br>
 - app/Http/Controllers/Api/V1/AttendanceApiController.phpを作成し、各アクションの定義<br>
@@ -151,7 +145,6 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 - app/Http/Requests/Api/V1/〜にIndexAttendanceRecordRequest.php,StoreAttendanceRecordRequest.php,UpdateAttendanceRecordRequest.phpを作成し、該当のアクションのリクエストデータのバリデーションを実装<br>
 - app/Policies/AttendanceRecordPolicy.phpを作成し、update,destroyのアクション時に本人または管理者の権限の確認を行う<br>
 - Laravel Sanctumを導入しstore,update,destroyのルートにミドルウェアauth:sanctumを適用
-
 ### マイ勤怠レポート画面表示機能
 当月を基準に半年間の勤怠情報の集計画面の表示<br>
 労働時間•残業時間の各合計時間、1日の平均労働時間の表示<br>
@@ -160,6 +153,10 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 ## その他の機能要件以外の機能
 - ### 勤怠リストのカレンダーアイコン、並びにその隣の現在表示中の日時の文字をクリックするとデータ表示したい月、または日を選ぶことができる
 > スタッフページの月次勤怠リストや管理者ページの選択したスタッフの月次勤怠リスト、管理者ページの日時勤怠リストにinputタグのonchangeを使用し、表示したい日時を選択するとその日時のデータを表示する
+---
+- ### 勤怠修正の承認ステータスが２（了承済み）の場合、コメントが「了承済みです」に変更される
+> 修正一覧からタブ切り替えで了承済みのデータの詳細ボタンを押した時、勤怠詳細画面にて「了承済みです」のコメントが表示される
+---
 - ### サービスクラスの作成
 > App/Services/~にAttendanceServiceを作成。労働時間や休憩時間の計算、月次勤怠情報の取得など共通できるロジックをサービスクラスに入れ、コードの保守性を向上
 > #### 作成したアクション
