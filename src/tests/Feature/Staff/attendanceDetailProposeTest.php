@@ -149,7 +149,8 @@ class attendanceDetailProposeTest extends TestCase
             'attendance' => '09:00',
             'leave' => '18:00',
             'rest' => [
-                $rest->id => [
+                [
+                    'rest_id' => $rest->id,
                     'rest_start' => '12:00',
                     'rest_end' => '13:00'
                 ]
@@ -169,7 +170,7 @@ class attendanceDetailProposeTest extends TestCase
         $this->assertEquals('09:00', $proposal->proposed_attendance['attendance_time']);
         $this->assertEquals('18:00', $proposal->proposed_attendance['leave_time']);
 
-        $proposedRestData = current($proposal->proposed_rest);
+        $proposedRestData = collect($proposal->proposed_rest)->first();
         $this->assertEquals('12:00', $proposedRestData['rest_start']);
         $this->assertEquals('13:00', $proposedRestData['rest_end']);
 
