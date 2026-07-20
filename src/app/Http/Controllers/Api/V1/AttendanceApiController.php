@@ -60,12 +60,6 @@ class AttendanceApiController extends Controller
                         ->latest('attendance_date')
                         ->paginate($perPage);
 
-        if($attendancesRecord_records->isEmpty()){
-            return response()->json([
-                'message' => '出勤記録がありませんでした。',
-            ],404);
-        }
-
         return AttendanceRecordResource::collection($attendancesRecord_records);
     }
 
@@ -110,19 +104,13 @@ class AttendanceApiController extends Controller
      * @param  int  $attendanceRecord 勤怠IDのモデル情報を取得
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,Attendance $attendanceRecord)
+    public function show(Attendance $attendanceRecord)
     {
         $attendanceRecord->load([
             'user',
             'rests',
             'proposals'
         ]);
-
-        if(!$attendanceRecord){
-            return response()->json([
-                'error' => '勤怠情報が見つかりませんでした。'
-            ],404);
-        }
 
         return new AttendanceRecordResource($attendanceRecord);
     }

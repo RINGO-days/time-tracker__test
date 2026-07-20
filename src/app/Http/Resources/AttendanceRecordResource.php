@@ -37,6 +37,7 @@ class AttendanceRecordResource extends JsonResource
             'date' => $this->attendance_date,
             'clock_in' => $this->attendance_time->format('H:i:s'),
             'clock_out' => $this->leave_time->format('H:i:s'),
+            'comment' => $this->comment,
             'total_time' => $this->calculateActualTotalTime($attendanceService),
             'total_break_time' => $this->calculateTotalBreakTime($attendanceService),
             'breaks' => AttendanceBreakRecordResource::collection($this->whenLoaded('rests')),

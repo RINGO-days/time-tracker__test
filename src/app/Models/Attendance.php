@@ -17,6 +17,7 @@ class Attendance extends Model
         'attendance_date',
         'attendance_time',
         'leave_time',
+        'comment'
     ];
 
     protected $casts = [

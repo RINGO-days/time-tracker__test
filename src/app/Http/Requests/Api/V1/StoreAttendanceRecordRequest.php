@@ -30,7 +30,7 @@ class StoreAttendanceRecordRequest extends FormRequest
                     return $query->where('user_id',$this->user()->id);
                 })],
             'clock_in' => ['required','date_format:H:i:s'],
-            'clock_out' => ['nullable','date_format:H:i:s'],
+            'clock_out' => ['nullable','date_format:H:i:s','after:clock_in'],
             'comment' => ['nullable','max:225']
         ];
 
