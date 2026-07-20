@@ -46,7 +46,7 @@ class AttendanceService
      *
      * - 送られてきたリクエストボディから1日の複数回の休憩時間を合算し、分単位で算出する
      * - 求めた合計休憩時間(分)からHH:mm形式にフォーマットする
-     * - 休憩中($in_resting = true)の場合は空文字('')を返す
+     * - 休憩中($in_resting = true)の場合、空文字('')を返す
      *
      * @param Attendance|null $attendandeDay 1日の勤怠情報(存在しない場合はnull)
      *
@@ -141,26 +141,24 @@ class AttendanceService
     {
         extract($this->getMonthPeriod($request));
 
-        if(auth()->user()->is_admin){
-            $attendance_month = Attendance::where('user_id',$request->id)
-                                ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
-                                ->get();
-        }else{
-            $attendance_month = Attendance::where('user_id',auth()->id())
-                                ->whereBetween('attendance_date',[$startOfMonth->toDateString(),$endOfMonth->toDateString()])
-                                ->get();
-        }
+        $user_id = auth()->user()->is_admin ? $request->id : auth()->id();
+        $attendance_month = Attendance::with('rests')
+            ->where('user_id',$user_id)
+            ->whereBetween('attendance_date', [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
+            ->get()
+            ->keyBy('attendance_date');
+
+        $weeks = ['日', '月', '火', '水', '木', '金', '土'];
 
         $period = CarbonPeriod::create($startOfMonth,$endOfMonth);
 
-        return collect($period)->map(function ($date) use ($attendance_month){
-            $dateString = $date->toDateString();
-            $weeks = ['日','月','火','水','木','金','土'];
+        return collect($period)->map(function ($date) use ($attendance_month,$weeks){
             $week = $weeks[$date->dayOfWeek];
+            $dateString = $date->toDateString();
 
-            $attendance_day = $attendance_month->where('attendance_date',$dateString)->first();
-            $attendance_time = $attendance_day ? Carbon::parse($attendance_day->attendance_time) : '';
-            $leave_time = $attendance_day ? Carbon::parse($attendance_day->leave_time) : '';
+            $attendance_day = $attendance_month->get($dateString);
+            $attendance_time = $attendance_day && $attendance_day->attendance_time ? Carbon::parse($attendance_day->attendance_time) : '';
+            $leave_time = $attendance_day && $attendance_day->leave_time ? Carbon::parse($attendance_day->leave_time) : '';
 
             if($attendance_time && $leave_time){
                 $work_seconds = $attendance_time->diffInSeconds($leave_time);
