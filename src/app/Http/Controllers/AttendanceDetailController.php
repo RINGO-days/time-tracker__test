@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\Rest;
 use App\Models\User;
 use App\Models\Proposal;
 use App\Http\Requests\ProposalRequest;

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CsvExportController;
 
 Route::get('/admin/login',function(){
     return view('admin.adminLogin',['nav' => false]);
@@ -32,7 +33,7 @@ Route::middleware('auth','verified')->group(function(){
             Route::get('/staff/list',[AdminController::class,'staffList']);
             Route::get('/attendance/newDetail', [AdminController::class, 'newDetailByAdmin']);
             Route::get('/attendance/staff/{id}',[AdminController::class,'staffMonthlyAttendance']);
-            Route::get('/csvExport/{id}',[AdminController::class,'export']);
+            Route::get('/csvExport/{id}',[CsvExportController::class,'export']);
             Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminController::class,'requestShow']);
             Route::post('/stamp_correction_request/approve/update/{attendance_correct_request_id}', [AdminController::class,'approve']);
         });
