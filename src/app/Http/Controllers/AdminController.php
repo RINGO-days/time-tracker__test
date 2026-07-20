@@ -51,7 +51,7 @@ class AdminController extends Controller
      *
      * - 動的セグメントから勤怠IDを取得
      * - 取得した勤怠情報をViewファイルに渡す
-     * - 取得した勤怠情報に紐付いている修正データのステータスを取得し、Viewファイルにてステータスが承認待ちだった場合、注意コメントを画面に表示
+     * - 選択した勤怠IDから承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージの画面が表示される
      * @param int $id 勤怠ID
      * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
      */
@@ -67,9 +67,14 @@ class AdminController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        $proposalStatus = Proposal::where('attendance_id',$attendance->id)->latest()->value('status');
+        $proposal = Proposal::where('attendance_id',$attendance->id)
+            ->latest()
+            ->first();
+        if($proposal && $proposal->status === 1){
+            return view('common.confirmDetail',compact('proposal'),['nav' => 'admin']);
+        }
 
-        return view('common.detail',compact('details','rests','proposalStatus'),['nav' => 'admin']);
+        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
     }
     /**
      * 管理者用のスタッフ一覧画面

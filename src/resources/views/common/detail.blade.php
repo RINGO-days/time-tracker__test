@@ -9,13 +9,6 @@
 @endsection
 
 @section('main')
-    @if(($proposalStatus ?? null) === 1)
-        <div class="message__box">
-            <p class="message">この勤怠はすでに修正申請があります。
-                <a class="request-list__link" href="/stamp_correction_request/list">修正申請一覧へ</a>
-            </p>
-        </div>
-    @endif
     <h1 class="title">勤怠詳細</h1>
     @if($details['attendance_id'] === 'new_id')
         <form action="/newDetail/propose/staff/{{$details['user_id']}}" method="POST">

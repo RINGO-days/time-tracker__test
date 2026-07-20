@@ -58,7 +58,7 @@ class AttendanceDetailController extends Controller
      *
      * - 選択した日付をクエリパラメータから取得し、詳細画面に表示する
      * - 休憩データを入力できる空欄を作るため、$restsは空の配列を渡す
-     * - 選択した日付の勤怠から承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージが表示される
+     * - 選択した日付の勤怠から承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージの画面が表示される
      *
      * @param Request $request クエリパラメータから新規勤怠登録する日付を取得
      *
@@ -73,11 +73,15 @@ class AttendanceDetailController extends Controller
             'date' => $request->query('date'),
         ];
         $rests = [];
-        $proposalStatus = Proposal::where('user_id',auth()->id())
+        $proposal = Proposal::where('user_id',auth()->id())
                             ->where('target_date',$request->date)
                             ->latest()
-                            ->value('status');
-        return view('common.detail',compact('details','rests','proposalStatus'));
+                            ->first();
+        if ($proposal && $proposal->status  === 1) {
+            return view('common.detailConfirm', compact('proposal'));
+        }
+
+        return view('common.detail',compact('details','rests'));
     }
 
     /**
