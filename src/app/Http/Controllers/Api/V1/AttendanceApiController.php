@@ -52,13 +52,13 @@ class AttendanceApiController extends Controller
                 $month = $parts[1];
 
                 $query->whereYear('attendance_date',$year)
-                        ->whereMonth('attendance_date',$month);
+                    ->whereMonth('attendance_date',$month);
             }
         });
 
         $attendancesRecord_records = $query->with(['user','rests'])
-                        ->latest('attendance_date')
-                        ->paginate($perPage);
+            ->latest('attendance_date')
+            ->paginate($perPage);
 
         return AttendanceRecordResource::collection($attendancesRecord_records);
     }
@@ -89,8 +89,8 @@ class AttendanceApiController extends Controller
             'rests'
         ]);
         return (new AttendanceRecordResource($attendanceRecord))
-                ->response()
-                ->setStatuscode(201);
+            ->response()
+            ->setStatuscode(201);
     }
 
     /**
@@ -168,6 +168,7 @@ class AttendanceApiController extends Controller
         $this->authorize('delete',$attendanceRecord);
 
         $attendanceRecord->delete();
+        
         return response()->json(null, 204);
     }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CsvExportController;
+use App\Http\Controllers\AttendanceReportController;
 
 Route::get('/admin/login',function(){
     return view('admin.adminLogin',['nav' => false]);
@@ -23,7 +24,7 @@ Route::middleware('auth','verified')->group(function(){
         Route::post('/rest', [AttendanceController::class, 'rest']);
         Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'detail']);
         Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
-        Route::get('/attendance/report',[AttendanceController::class,'report']);
+        Route::get('/attendance/report',[AttendanceReportController::class,'report']);
     });
 
     Route::middleware('admin')->group(function(){

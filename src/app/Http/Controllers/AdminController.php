@@ -35,8 +35,8 @@ class AdminController extends Controller
         $nextDay = Carbon::parse($targetDay)->copy()->addDay()->format('Y/m/d');
 
         $dailyAttendances = Attendance::with(['user','rests'])
-                            ->where('attendance_date',$targetDay)
-                            ->get();
+            ->where('attendance_date',$targetDay)
+            ->get();
         $dailyAttendances->each(function($dailyAttendance) use ($attendanceService){
             $dailyAttendance->rest_total_str = $attendanceService->calculateRestTime($dailyAttendance);
             if($dailyAttendance->attendance_time && $dailyAttendance->leave_time){
@@ -50,15 +50,14 @@ class AdminController extends Controller
      * スタッフ、管理者共通のViewファイル
      *
      * - 動的セグメントから勤怠IDを取得
-     * - 取得した勤怠情報をViewファイルに渡す
      * - 選択した勤怠IDから承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージの画面が表示される
      * @param int $id 勤怠ID
      * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
      */
     public function editDetail($id) : View
     {
-        $attendance = Attendance::with('user','rests','proposals')
-                    ->findOrFail($id);
+        $attendance = Attendance::with('user','rests','proposals')->findOrFail($id);
+
         $rests = $attendance->rests;
         $details = [
             'attendance_id' => $attendance->id,
@@ -67,13 +66,10 @@ class AdminController extends Controller
             'attendance' => $attendance->attendance_time->format('H:i'),
             'leave' => $attendance->leave_time ? $attendance->leave_time->format('H:i') : '',
         ];
-        $proposal = Proposal::where('attendance_id',$attendance->id)
-            ->latest()
-            ->first();
+        $proposal = Proposal::where('attendance_id',$attendance->id)->latest()->first();
         if($proposal && $proposal->status === 1){
             return view('common.detailConfirm',compact('proposal'),['nav' => 'admin']);
         }
-
         return view('common.detail',compact('details','rests'),['nav' => 'admin']);
     }
     /**
@@ -113,7 +109,6 @@ class AdminController extends Controller
     public function requestShow($attendance_correct_request_id) : View
     {
         $proposal = Proposal::with(['user','attendance.rests'])->findOrFail($attendance_correct_request_id);
-
         return view('admin.correctionApprove',compact('proposal'),['nav' => 'admin']);
     }
     /**
@@ -121,10 +116,8 @@ class AdminController extends Controller
      * DBトランザクションによりデータ不整合を防ぐ
      * - 動的セグメントから、修正申請データのIDを取得
      * - 出勤時間と退勤時間はそのままattendancesテーブルにアップデート
-     * **追加機能**
-     * * 既存の休憩IDがあり、かつ時間が空になった場合は該当の休憩レコードを個別削除。
-     * - すでに登録されている休憩データIDがキーになっている修正申請はアップデート
-     * - ないもキー名がないデータは新規休憩データとして作成
+     * - 既存の休憩IDがあり、かつ時間が空になった場合は該当の休憩レコードを個別削除。
+     * - すでに登録されている休憩データIDがキーになっている修正申請はアップデートし、キー名がないデータは新規休憩データとして作成
      * - 最後に修正申請データのステータスを２(承認済み)に変更
      * @param $attendance_correct_request_id 修正申請データのID
      * @return ResponseRedirect
@@ -158,6 +151,7 @@ class AdminController extends Controller
                 if (!empty($proposalRest['rest_id']) && empty($proposalRest['rest_start'])){
                     Rest::where('id', $proposalRest['rest_id'])->delete();
                     continue;
+                    // 既存のIDがあり、かつ入力データがない場合休憩レコードを削除
                 }
 
                 if(!empty($proposalRest['rest_id']) && !empty($proposalRest['rest_start'])){
@@ -200,7 +194,6 @@ class AdminController extends Controller
             'date' => $request->query('date'),
         ];
         $rests = [];
-
         return view('common.detail',compact('details','rests'),['nav' => 'admin']);
     }
 }

@@ -29,14 +29,14 @@ class AttendanceDetailController extends Controller
      */
     public function detail($id) : View
     {
-        $attendance = Attendance::with('user','rests')
-                    ->findOrFail($id);
+        $attendance = Attendance::with('user','rests')->findOrFail($id);
 
         $proposal = Proposal::with('user','attendance')
-                    ->where('user_id',auth()->id())
-                    ->where('attendance_id',$attendance->id)
-                    ->latest()
-                    ->first();
+            ->where('user_id',auth()->id())
+            ->where('attendance_id',$attendance->id)
+            ->latest()
+            ->first();
+
         if($proposal && $proposal->status === 1){
             return view('common.detailConfirm',compact('proposal'));
         }
