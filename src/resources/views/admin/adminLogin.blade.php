@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    <title>ログイン</title>
+    <title>勤怠管理アプリ＿管理者ログイン</title>
 @endsection
 
 @section('css')

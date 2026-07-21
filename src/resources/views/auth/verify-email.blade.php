@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    <title>メール認証</title>
+    <title>勤怠管理アプリ＿メール認証</title>
 @endsection
 
 @section('css')
