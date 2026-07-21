@@ -65,7 +65,6 @@ php artisan migrate:fresh --seed
 - MailHog
 - Fortify
 - Sanctum
-
 ## 📍開発環境
 - http://localhost ホーム画面
 - http://localhost/register 新規会員登録画面
@@ -73,7 +72,6 @@ php artisan migrate:fresh --seed
 - http://localhost/admin/login 管理者ログイン画面
 - http://localhost:8080 phpMyAdmin
 - http://localhost:8025 MailHog
-
 ## 🔑実装内容
 要件シートに則った基本要件の実装
 ### メール認証
@@ -150,6 +148,9 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 半年の期間の各月の勤怠情報<br>
 遅刻回数、早退回数、長時間労働回数のカウント
 ## その他の機能要件以外の機能
+- ### ログアウト時のコメント表示
+> 正常にログアウト時に、ログイン画面にログアウトしたことを伝えるメッセージを表示。
+---
 - ### 勤怠リストのカレンダーアイコン、並びにその隣の現在表示中の日時の文字をクリックするとデータ表示したい月、または日を選ぶことができる
 > スタッフページの月次勤怠リストや管理者ページの選択したスタッフの月次勤怠リスト、管理者ページの日時勤怠リストにinputタグのonchangeを使用し、表示したい日時を選択するとその日時のデータを表示する
 ---
