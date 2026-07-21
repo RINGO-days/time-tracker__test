@@ -151,8 +151,6 @@ class AttendanceDetailController extends Controller
      * - クエリパラメータtabがapprovedの時、proposalsテーブルのステータスが２(承認済み)のデータを取得
      * - それ以外は承認待ちのデータを取得
      *
-     * スタッフと管理者は別のヘッダーを使用しているため、Viewファイルは同じだが、管理者の場合ヘッダー用の変数をViewに渡している。
-     *
      * @param Request $request クエリパラメータで承認待ちと承認済みのタブの切り替え
      *
      * @return View
@@ -172,10 +170,6 @@ class AttendanceDetailController extends Controller
         }
 
         $proposals = $query->get();
-
-        if(auth()->user()->is_admin){
-            return view('staff.applyList',compact('proposals'),['nav' => 'admin']);
-        }
 
         return view('staff.applyList',compact('proposals'));
     }
