@@ -11,7 +11,7 @@ class HeaderComposer
      * スタッフ画面のヘッダーを出勤時のステータスによって変える
      * 管理者だった場合、管理者用のヘッダーを表示する
      *
-     * - 未ログイン状態の場合は
+     * 未ログイン状態の場合はヘッダーを表示しない
      */
     public function compose(View $view): void
     {
