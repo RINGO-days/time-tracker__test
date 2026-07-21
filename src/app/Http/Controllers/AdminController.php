@@ -26,7 +26,7 @@ class AdminController extends Controller
      * - サービスクラスの計算ロジックから合計の休憩時間と実労働時間を取得
      * @param Request $request クエリパラメータから日付情報を取得
      * @param AttendanceService $attendanceService 休憩時間と実労働時間の計算ロジック
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function dailyAttendance(Request $request,AttendanceService $attendanceService) : View
     {
@@ -43,7 +43,7 @@ class AdminController extends Controller
                 $dailyAttendance->actual_work_time_str = $attendanceService->calculateActualWorkTime($dailyAttendance);
             }
         });
-        return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'),['nav' => 'admin']);
+        return view('admin.dailyAttendance',compact('targetDay','preDay','nextDay','dailyAttendances'));
     }
     /**
      * 管理者用の勤怠リストから詳細ボタンを押した時の画面表示
@@ -52,7 +52,7 @@ class AdminController extends Controller
      * - 動的セグメントから勤怠IDを取得
      * - 選択した勤怠IDから承認状態のステータスを取得し、承認待ちだった場合、申請済みのメッセージの画面が表示される
      * @param int $id 勤怠ID
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function editDetail($id) : View
     {
@@ -68,19 +68,19 @@ class AdminController extends Controller
         ];
         $proposal = Proposal::where('attendance_id',$attendance->id)->latest()->first();
         if($proposal && $proposal->status === 1){
-            return view('common.detailConfirm',compact('proposal'),['nav' => 'admin']);
+            return view('common.detailConfirm',compact('proposal'));
         }
-        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
+        return view('common.detail',compact('details','rests'));
     }
     /**
      * 管理者用のスタッフ一覧画面
      * usersテーブルからスタッフ情報を全て取得
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function staffList() : View
     {
         $staffs = User::where('is_admin',false)->get();
-        return view('admin.staffList',compact('staffs'),['nav' => 'admin']);
+        return view('admin.staffList',compact('staffs'));
     }
     /**
      *  管理者用のスタッフ毎の月次勤怠画面
@@ -90,7 +90,7 @@ class AdminController extends Controller
      * - スタッフ情報も画面に表示するため、動的セグメントからスタッフ情報を取得
      * @param Request $request クエリパラメータから表示したい月を取得
      * @param AttendanceService $attendanceService ページ変更のための変数の取得と月毎の勤怠情報の取得
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function staffMonthlyAttendance(Request $request,AttendanceService $attendanceService,$id) : View
     {
@@ -98,18 +98,18 @@ class AdminController extends Controller
         $records = $attendanceService->getMonthlyRecords($request);
         $user = User::findOrFail($id);
 
-        return view('admin.staffMonthlyAttendance',compact('records','preMonth','nextMonth','targetMonth','user'),['nav' => 'admin']);
+        return view('admin.staffMonthlyAttendance',compact('records','preMonth','nextMonth','targetMonth','user'));
     }
     /**
      * 管理者用の修正申請リストから詳細ボタンを押した時の画面表示
      * - 動的セグメントから、修正申請データのIDを取得
      * @param $attendance_correct_request_id 修正申請データのID
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function requestShow($attendance_correct_request_id) : View
     {
         $proposal = Proposal::with(['user','attendance.rests'])->findOrFail($attendance_correct_request_id);
-        return view('admin.correctionApprove',compact('proposal'),['nav' => 'admin']);
+        return view('admin.correctionApprove',compact('proposal'));
     }
     /**
      * 修正申請の詳細画面で、承認ボタンを押した時のアクション
@@ -182,7 +182,7 @@ class AdminController extends Controller
      * - 休憩データは空の配列の状態で渡す
      * @param Request $request クエリパラメータから作成したい日付の取得
      * @param int $id ユーザーID
-     * @return View 管理者用のヘッダー表示のための変数をViewファイルに渡す
+     * @return View
      */
     public function newDetailByAdmin(Request $request,$id) : View
     {
@@ -194,6 +194,6 @@ class AdminController extends Controller
             'date' => $request->query('date'),
         ];
         $rests = [];
-        return view('common.detail',compact('details','rests'),['nav' => 'admin']);
+        return view('common.detail',compact('details','rests'));
     }
 }

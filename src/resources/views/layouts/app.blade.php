@@ -1,11 +1,3 @@
-<!-- 出勤時のステータスに応じでヘッダーを変える -->
-@php
-    use App\Models\Attendance;
-    $status = Attendance::where('attendance_date',today()->format('Y-m-d'))
-                        ->where('user_id',auth()->id())
-                        ->latest()
-                        ->value('status');
-@endphp
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -22,7 +14,7 @@
         <div class="header__logo">
             <img src="{{asset('img/COACHTECHヘッダーロゴ.png')}}" alt="ヘッダーロゴ">
         </div>
-        @if(($nav ?? '') === 'admin')
+        @if($is_admin)
             <nav>
                 <ul class="header__nav-item">
                     <li><a href="/admin/attendance/list">勤怠一覧</a></li>
