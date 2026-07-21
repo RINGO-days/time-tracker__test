@@ -21,5 +21,6 @@ class ViewGuardMiddleware
                 'user_id' => auth()->id()
             ]);
         }
+        return $next($request);
     }
 }

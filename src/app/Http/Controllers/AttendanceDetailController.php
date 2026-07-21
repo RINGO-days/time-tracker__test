@@ -159,8 +159,8 @@ class AttendanceDetailController extends Controller
     {
         $query = Proposal::with('user','attendance');
 
-        if(!auth()->user()->is_admin){
-            $query->where('user_id',auth()->id());
+        if($request->has('user_id')){
+            $query->where('user_id',$request->user_id);
         }
 
         if($request->query('tab') == 'approved'){
