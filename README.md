@@ -9,9 +9,8 @@ git clone git@github.com:RINGO-days/time-tracker__test.git
 2. Dockerデスクトップアプリを立ち上げる
 3. ワーキングディレクトリに移動
 ```bash
-cd free-market-test
+cd time-tracker__test
 ```
-
 4. Dockerの立ち上げ
 ```bash
 docker-compose up -d --build
