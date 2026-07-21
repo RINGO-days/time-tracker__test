@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-<title>勤怠一覧</title>
+    <title>勤怠管理アプリ＿{{$targetMonth}}の勤怠</title>
 @endsection
 
 @section('css')
@@ -9,11 +9,6 @@
 @endsection
 
 @section('main')
-    <div class="flash-message__box">
-        @if (session('message'))
-            <span class="flash-message">{{ session('message') }}</span>
-        @endif
-    </div>
     <h1 class="title">勤怠一覧</h1>
     <div class="pagenation__box">
         <div class="link__box">

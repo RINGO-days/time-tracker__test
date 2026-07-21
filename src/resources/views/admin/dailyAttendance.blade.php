@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-    <title>勤怠一覧</title>
+    <title>勤怠管理アプリ＿{{$targetDay->format('Y-m-d')}}の勤怠</title>
 @endsection
 
 @section('css')
@@ -14,7 +14,7 @@
             <span class="flash-message">{{ session('message') }}</span>
         @endif
     </div>
-    <h1 class="title">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
+    <h1 class="title daily-attendance">{{$targetDay->format('Y年n月j日')}}の勤怠</h1>
     <div class="pagenation__box">
         <div class="link__box">
             <a class="page-link" href="?day={{$preDay}}">

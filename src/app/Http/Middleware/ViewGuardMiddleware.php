@@ -17,15 +17,10 @@ class ViewGuardMiddleware
     public function handle(Request $request, Closure $next)
     {
         if(!auth()->user()->is_admin){
-            $request->mergeIfMissing([
+            $request->merge([
                 'user_id' => auth()->id()
             ]);
-
-            if((int)$request->user_id !== auth()->id()){
-                return back()->with('message','他ユーザーの閲覧権限がありません。');
-            }
         }
-
         return $next($request);
     }
 }
