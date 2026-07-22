@@ -8,21 +8,21 @@ use App\Http\Controllers\CsvExportController;
 use App\Http\Controllers\AttendanceReportController;
 
 Route::get('/admin/login',function(){
-    return view('admin.adminLogin',['nav' => false]);
+    return view('admin.adminLogin');
 });
 
 Route::middleware('auth','verified')->group(function(){
     Route::post('/detail/propose/{id}', [AttendanceDetailController::class, 'propose']);
-    Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']);
     Route::post('/newDetail/propose/staff/{id}', [AttendanceDetailController::class, 'newDetailPropose']);
     Route::get('/stamp_correction_request/list', [AttendanceDetailController::class, 'applyList'])->middleware('viewGuard');
 
     Route::middleware('staff')->group(function(){
         Route::get('/',[AttendanceController::class,'index']);
-        Route::get('/list',[AttendanceController::class,'list']);
         Route::post('/attendance',[AttendanceController::class,'attendance']);
         Route::post('/rest', [AttendanceController::class, 'rest']);
+        Route::get('/list', [AttendanceController::class, 'list']);
         Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'detail']);
+        Route::get('/attendance/newDetail', [AttendanceDetailController::class, 'newDetail']);
         Route::get('/detail/propose/{id}', [AttendanceDetailController::class, 'detailConfirmShow']);
         Route::get('/attendance/report',[AttendanceReportController::class,'report']);
     });

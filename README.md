@@ -96,7 +96,6 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 | remenber_token | varchar(100) |  |  | ○ |  |
 | created_at | timestamp |  |  | ○ |  |
 | updated_at | timestamp |  |  | ○ |  |
-
 #### **attendancesテーブル**
 | カラム名 | 型 | primary key | unique key | not null | foreign key |
 | --- | --- | --- | --- | --- | --- |
@@ -172,16 +171,13 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 > 勤怠情報を修正申請しテーブルに保存、それと同時に管理者の場合、直接勤怠情報を修正するアクション<br>
 > 後述する、新規で勤怠登録を行うアクションと同じ処理のため、サービスクラスにて共通化
 ---
-- ### スタッフ用のミドルウェアと管理者用のミドルウェアの作成
+- ### スタッフ用のミドルウェアと管理者用のミドルウェアの作成(AdminMiddleware.php , StaffMiddleware.php)
 > #### 意図
 > スタッフと管理者の役割を棲み分けし、互いのページにアクセスできないよう設計。<br>
 > よって管理者は打刻機能を使うことができない。また管理者画面のスタッフ一覧で管理者は表示されない。
 > #### 機能
 > スタッフは管理者用のページにアクセスしようとすると、アクセスできませんの旨のメッセージとともに<a>http://localhost/attendance</a>にリダイレクトされる。<br>
 > 管理者も同じように一般スタッフ用ページにアクセスしようとすると<a>http://localhost/admin/attendance/list</a>にリダイレクトされる
-> #### 作成したミドルウェア　（src/app/Http/Middleware/〜）
-> - AdminMiddleware
-> - StaffMiddleware
 ---
 - ### 既存の勤怠データではなく、新規で勤怠データを作成するメソッドの作成
 > 月次勤怠リストに出勤日の時間の記載がない欄の詳細ボタンから、新規で勤怠を作成するできるようにロジックを追加。
@@ -195,3 +191,7 @@ mailhogを使用(メール認証画面：<a>http://localhost:8025</a>)<br>
 > #### 機能を追加したアクション
 > - サービスクラス App/Services/AttendanceService **createAttendanceDetailProposal**
 > - コントローラー AdminController **approve**
+---
+- ### API　PUT送信のバリデーション時のDBのデータとの比較(UpdateAttendanceRecordRequest.php)
+> 出勤時間を修正する際に、退勤時間の修正の記載がなかったとき、データベースから事前に登録されているデータを持ってきて、before:leaveなどのバリデーションチェックを行う<br>
+>退勤時間修正時も同様

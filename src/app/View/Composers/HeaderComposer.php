@@ -19,6 +19,7 @@ class HeaderComposer
             $view->with([
                 'status' => null,
                 'is_admin' => false,
+                'nav' => false
             ]);
             return;
         }
