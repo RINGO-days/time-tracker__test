@@ -171,7 +171,7 @@ class AttendanceDetailController extends Controller
 
         $proposals = $query->get();
 
-        return view('staff.applyList',compact('proposals'));
+        return view('common.applyList',compact('proposals'));
     }
 
     /**
