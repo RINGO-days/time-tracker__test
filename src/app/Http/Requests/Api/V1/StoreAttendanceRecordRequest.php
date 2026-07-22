@@ -31,7 +31,7 @@ class StoreAttendanceRecordRequest extends FormRequest
                 })],
             'clock_in' => ['required','date_format:H:i:s'],
             'clock_out' => ['nullable','date_format:H:i:s','after:clock_in'],
-            'comment' => ['nullable','max:225']
+            'comment' => ['nullable','max:255']
         ];
 
         // 出勤時刻が適切な形式ではない場合に、clock_outのafterのバリデーションが実行されるのを防ぐ

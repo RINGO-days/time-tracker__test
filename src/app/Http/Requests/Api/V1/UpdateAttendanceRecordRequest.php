@@ -27,11 +27,12 @@ class UpdateAttendanceRecordRequest extends FormRequest
         return [
             'date' => [
                 'nullable',
+                'date_format:Y-m-d',
                 Rule::unique('attendances','attendance_date')->ignore($this->route('attendanceRecord')->id)->where('user_id', $this->user()->id)
             ],
-            'clock_in' => ['nullable','date_format:H:i:s'],
-            'clock_out' => ['required_with:clock_out','nullable','date_format:H:i:s'],
-            'comment' => ['nullable','string','max:255']
+            'clock_in' => ['nullable','date_format:H:i:s','before:clock_out'],
+            'clock_out' => ['nullable','date_format:H:i:s', 'after:clock_in'],
+            'comment' => ['nullable','max:255']
         ];
 
         // 出勤時刻が適切な形式ではない場合に、clock_outのafterのバリデーションが実行されるのを防ぐ
@@ -45,6 +46,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
     {
         return [
             'date.unique' => 'この日付の勤怠はすでに登録されています。',
+            'date.date_format' => '勤怠日はYYYY-MM-DD形式で指定してください。',
             'clock_in.before' => '出勤時刻は退勤時間より前の時刻を指定してください。',
             'clock_in.date_format' => '出勤時刻はHH:MM:SS形式で指定してください。',
             'clock_out.after' => '退勤時刻は出勤時刻より後の時刻を選択してください。',
@@ -53,6 +55,10 @@ class UpdateAttendanceRecordRequest extends FormRequest
         ];
     }
 
+    /**
+     * 退勤時間を修正する場合に、出勤時間の修正の値がなかった時、データベースからすでに登録されている出勤時間を反映し、バリデーションチェック(after)を行う
+     * 出勤時間の修正も同様
+     */
     public function prepareForValidation() : void
     {
         $attendance = $this->route('attendanceRecord');
