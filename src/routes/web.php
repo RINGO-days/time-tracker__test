@@ -32,7 +32,7 @@ Route::middleware('auth','verified')->group(function(){
             Route::get('/attendance/list',[AdminController::class,'dailyAttendance']);
             Route::get('/attendance/{id}',[AdminController::class,'editDetail']);
             Route::get('/staff/list',[AdminController::class,'staffList']);
-            Route::get('/attendance/newDetail', [AdminController::class, 'newDetailByAdmin']);
+            Route::get('/attendance/newDetail/staff/{id}', [AdminController::class, 'newDetailByAdmin']);
             Route::get('/attendance/staff/{id}',[AdminController::class,'staffMonthlyAttendance']);
             Route::get('/csvExport/{id}',[CsvExportController::class,'export']);
             Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminController::class,'requestShow']);
