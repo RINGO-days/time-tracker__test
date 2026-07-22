@@ -118,7 +118,7 @@ class UserTableSeeder extends Seeder
         DB::table('users')->insert($param);
 
         $param = [
-            'name' => 'ユーザー3（一般）',
+            'name' => 'ユーザー3（管理者）',
             'email' => 'user3@example.com',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
