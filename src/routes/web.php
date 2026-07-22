@@ -8,7 +8,7 @@ use App\Http\Controllers\CsvExportController;
 use App\Http\Controllers\AttendanceReportController;
 
 Route::get('/admin/login',function(){
-    return view('admin.adminLogin',['nav' => false]);
+    return view('admin.adminLogin');
 });
 
 Route::middleware('auth','verified')->group(function(){
@@ -19,7 +19,6 @@ Route::middleware('auth','verified')->group(function(){
 
     Route::middleware('staff')->group(function(){
         Route::get('/',[AttendanceController::class,'index']);
-        Route::get('/list',[AttendanceController::class,'list']);
         Route::post('/attendance',[AttendanceController::class,'attendance']);
         Route::post('/rest', [AttendanceController::class, 'rest']);
         Route::get('/attendance/detail/{id}', [AttendanceDetailController::class, 'detail']);
